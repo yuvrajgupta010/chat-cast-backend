@@ -98,6 +98,11 @@ router.post(
             `Your account created using ${user.authenticator.authenticatorName}, please use social login!`
           );
         }
+        if (!user.isAccountVerified) {
+          return Promise.reject(
+            "Account not verified, please verify your email first!"
+          );
+        }
         // attach user document to request so we do need to query it again
         req.user = user;
       }),

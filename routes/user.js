@@ -28,7 +28,9 @@ router.put(
       .if((value, { req }) => req.query.update === "about")
       .trim()
       .notEmpty()
-      .withMessage("Please enter something about youself"),
+      .withMessage("Please enter something about youself")
+      .isLength({ max: 200 })
+      .withMessage("Enter only 200 characters"),
     body("currentPassword")
       .if((value, { req }) => req.query.update === "password")
       .trim()
@@ -53,6 +55,23 @@ router.put(
       }),
   ],
   userController.updateProfile
+);
+
+router.post(
+  "/profile/picture",
+  passportJWT,
+  [
+    body("fileName").trim().notEmpty().withMessage("Please provide filename"),
+    body("contentType")
+      .trim()
+      .notEmpty()
+      .withMessage("Please provide content type")
+      .isIn(["image/png", "image/jpeg", "image/jpg", "image/webp"])
+      .withMessage(
+        "Please provide profile image in .png, .jpg, jpeg, and .webp format"
+      ),
+  ],
+  userController.profilePicture
 );
 
 module.exports = router;

@@ -1,6 +1,7 @@
 const User = require("../models/user");
 const { expressValidation } = require("../helpers/validation");
 const { comparePassword, hashPassword } = require("../helpers/bcrypt");
+const { putS3ObjectURL } = require("../helpers/awsS3");
 
 exports.updateProfile = async (req, res, next) => {
   try {
@@ -59,8 +60,46 @@ exports.updateProfile = async (req, res, next) => {
       message = "Password updated successfully";
     }
     return res.status(200).json({
-      data: { user: user.toClient() },
       message,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.profilePicture = async (req, res, next) => {
+  try {
+    expressValidation(req);
+    const { fileName, contentType } = req.body;
+    const {
+      jwtPayload: { email, userId },
+    } = req;
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      const error = new Error("User not found");
+      error.status = 404;
+      throw error;
+    }
+
+    const awsObjectPath = `uploads/profile_picture/${userId}_${fileName}`;
+
+    const putUrlForObjectUpload = await putS3ObjectURL(
+      awsObjectPath,
+      contentType,
+      true
+    );
+
+    user.profile.profileImageURL = awsObjectPath;
+    await user.save();
+
+    return res.status(200).json({
+      data: {
+        user: user.toClient(),
+        presignedURL: putUrlForObjectUpload,
+      },
+      message: "URL generated successfully",
     });
   } catch (error) {
     next(error);
