@@ -1,4 +1,3 @@
-const hmmm = require("../helpers/awsS3");
 const authRoutes = require("./auth");
 const userRoutes = require("./user");
 

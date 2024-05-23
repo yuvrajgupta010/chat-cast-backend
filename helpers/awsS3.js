@@ -30,13 +30,13 @@ const s3Client = new S3Client({
  * @param {string} key - The key of the object to retrieve.
  * @returns {Promise<string>} - The presigned URL for getting the object.
  */
-const getS3ObjectURL = async (key) => {
+const getS3ObectURL = async (key) => {
   const command = new GetObjectCommand({
     Bucket: AWS_S3_BUCKET_NAME,
     Key: key,
   });
 
-  const url = await getSignedUrl(s3Client, command, { expiresIn: 30 }); //expire in 30 seconds
+  const url = await getSignedUrl(s3Client, command, { expiresIn: 30 }); // Expires in 30 seconds
   return url;
 };
 
@@ -44,27 +44,37 @@ const getS3ObjectURL = async (key) => {
  * Generates a presigned URL for uploading an object to S3.
  * @param {string} key - The key of the object to upload.
  * @param {string} contentType - The content type of the object to upload.
+ * @param {boolean} isPublic - Whether the object should be public
  * @returns {Promise<string>} - The presigned URL for uploading the object.
  */
-const putS3ObjectURL = async (key, contentType) => {
+const putS3ObjectURL = async (key, contentType, isPublic) => {
+  let bucket = AWS_S3_BUCKET_NAME;
+  if (isPublic) {
+    bucket = "chat-cast";
+  }
   const command = new PutObjectCommand({
-    Bucket: AWS_S3_BUCKET_NAME,
+    Bucket: bucket,
     Key: key,
     ContentType: contentType,
   });
 
-  const url = await getSignedUrl(s3Client, command, { expiresIn: 60 }); //expire in 1 min
+  const url = await getSignedUrl(s3Client, command, { expiresIn: 60 }); // Expires in 1 minute
   return url;
 };
 
 /**
  * Deletes an object from S3.
  * @param {string} key - The key of the object to delete.
+ * @param {boolean} isPublic - Delete from public bucket
  * @returns {Promise<Object>} - The response from the S3 delete operation.
  */
-const deleteS3Object = async (key) => {
+const deleteS3Object = async (key, isPublic) => {
+  let bucket = AWS_S3_BUCKET_NAME;
+  if (isPublic) {
+    bucket = "chat-cast";
+  }
   const command = new DeleteObjectCommand({
-    Bucket: AWS_S3_BUCKET_NAME,
+    Bucket: bucket,
     Key: key,
   });
 
@@ -72,15 +82,8 @@ const deleteS3Object = async (key) => {
   return response;
 };
 
-const consolefu = async () => {
-  const url = await putS3ObjectURL("linkedIn.png", "image/png");
-  console.log(url);
-};
-
-consolefu();
-
 module.exports = {
-  getS3ObjectURL,
+  getS3ObectURL,
   putS3ObjectURL,
   deleteS3Object,
 };
