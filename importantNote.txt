@@ -1,0 +1,1 @@
+- Only use 401 status code for requests that are unauthorization
