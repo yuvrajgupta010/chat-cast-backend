@@ -74,4 +74,6 @@ router.post(
   userController.profilePicture
 );
 
+router.get("/get-users", passportJWT, userController.searchUser);
+
 module.exports = router;

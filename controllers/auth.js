@@ -175,7 +175,10 @@ exports.accountVerification = async (req, res, next) => {
       await session.commitTransaction();
 
       return res.status(200).json({
-        data: { user: user.toClient(), jwtToken: jwtSignToken({ email }) },
+        data: {
+          user: user.toClient(),
+          jwtToken: jwtSignToken({ email, userId: user.id }),
+        },
         message: "Account verification done successfully",
       });
     } else if (requestTypeQuery === "resend") {
