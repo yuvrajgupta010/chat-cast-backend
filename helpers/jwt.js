@@ -8,6 +8,10 @@ exports.jwtSignToken = (jwtPayloadData) => {
   });
 };
 
+exports.jwtVerifyToken = (jwtToken, cb = (err, jwtPayload) => {}) => {
+  return JWT.verify(jwtToken, JWT_SECRET_KEY, cb);
+};
+
 exports.jwtForgetToken = (jwtPayloadData) => {
   return JWT.sign(jwtPayloadData, JWT_FORGET_TOKEN_KEY, {
     expiresIn: "5m",

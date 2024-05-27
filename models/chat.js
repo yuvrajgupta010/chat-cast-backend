@@ -27,7 +27,12 @@ const chatSchema = new Schema(
     },
     isGroupOpen: {
       type: Boolean,
-      required: true,
+      required: [
+        function () {
+          return this.isGroupChat;
+        },
+        "For group chat, isGroupOpen is required",
+      ],
     },
   },
   { timestamps: true }

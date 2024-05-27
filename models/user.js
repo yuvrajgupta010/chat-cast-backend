@@ -68,7 +68,6 @@ const userSchema = new Schema(
       },
       data: Object,
     },
-    isOnline: { type: Boolean, required: true, default: false },
     // profile data
     profile: {
       fullName: {

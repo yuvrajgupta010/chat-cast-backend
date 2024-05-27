@@ -1,11 +1,13 @@
 // library
 require("dotenv").config();
 const express = require("express");
+const http = require("http");
 const path = require("path");
 const helmet = require("helmet");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const passport = require("passport");
+const socketIo = require("socket.io");
 
 // helper or util
 const date = require("./helpers/date");
@@ -15,12 +17,21 @@ const errorMiddleware = require("./middlewares/error");
 
 // config
 const { mongoDBConnection } = require("./configs/mongoDB");
+const { jwtVerifyToken } = require("./helpers/jwt");
 
 const app = express();
 const PORT = process.env.PORT || 8080;
 
 app.use(
   cors({
+    origin: [
+      "http://localhost:3000",
+      "http://chat-cast.personal.yuvrajgupta.in",
+      "https://chat-cast.personal.yuvrajgupta.in",
+    ],
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
+    // preflightContinue: false,
+    // optionsSuccessStatus: 204,
     credentials: true,
   })
 );
@@ -43,9 +54,41 @@ app.get("/health-check", (req, res) => {
 require("./routes/routes")(app);
 app.use(errorMiddleware);
 
+const httpServer = http.createServer(app);
+const io = socketIo(httpServer, {
+  cors: {
+    origin: [
+      "http://localhost:3000",
+      "http://chat-cast.personal.yuvrajgupta.in",
+      "https://chat-cast.personal.yuvrajgupta.in",
+    ],
+    credentials: true,
+  },
+  connectionStateRecovery: {
+    // the backup duration of the sessions and the packets
+    maxDisconnectionDuration: 2 * 60 * 1000,
+    // whether to skip middlewares upon successful recovery
+    skipMiddlewares: true,
+  },
+});
+io.use((socket, next) => {
+  const token = socket.handshake.auth.token;
+  if (token) {
+    jwtVerifyToken((err, decoded) => {
+      if (err) {
+        return next(new Error("Authentication error"));
+      }
+      socket.user = decoded;
+      next();
+    });
+  } else {
+    next(new Error("Authentication error"));
+  }
+});
+
 mongoDBConnection
   .then(() => {
-    app.listen(PORT);
+    httpServer.listen(PORT);
     console.log(`I am running on PORT: ${PORT}...`);
   })
   .catch((err) => {
