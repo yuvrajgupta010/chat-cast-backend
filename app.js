@@ -8,6 +8,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const passport = require("passport");
 const socketIo = require("socket.io");
+require("./configs/redis.js");
 
 // helper or util
 const date = require("./helpers/date");
@@ -55,6 +56,7 @@ require("./routes/routes")(app);
 app.use(errorMiddleware);
 
 const httpServer = http.createServer(app);
+
 const io = socketIo(httpServer, {
   cors: {
     origin: [
@@ -71,20 +73,28 @@ const io = socketIo(httpServer, {
     skipMiddlewares: true,
   },
 });
+
 io.use((socket, next) => {
-  const token = socket.handshake.auth.token;
-  if (token) {
-    jwtVerifyToken((err, decoded) => {
+  let accessToken;
+  if (process.env.SERVER_ENV === "DEV") {
+    accessToken = socket.handshake.query.accessToken;
+  } else {
+    accessToken = socket.handshake.auth.accessToken;
+  }
+  if (accessToken) {
+    jwtVerifyToken(accessToken, (err, jwtPayload) => {
       if (err) {
         return next(new Error("Authentication error"));
       }
-      socket.user = decoded;
+      socket.jwtPayload = jwtPayload;
       next();
     });
   } else {
     next(new Error("Authentication error"));
   }
 });
+
+io.on("connection", (socket) => require("./socket.io/server")(io, socket));
 
 mongoDBConnection
   .then(() => {
