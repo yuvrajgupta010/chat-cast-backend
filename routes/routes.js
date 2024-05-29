@@ -1,5 +1,6 @@
 const authRoutes = require("./auth");
 const userRoutes = require("./user");
+const chatRoutes = require("./chat");
 
 ///////////////////All initalization imports - start///////////////////////
 // Passport
@@ -14,6 +15,7 @@ module.exports = function (app) {
   //Handling Routes
   app.use("/auth", authRoutes);
   app.use("/user", userRoutes);
+  app.use("/chat", chatRoutes);
 
   //Some error
   app.use((req, res, next) => {

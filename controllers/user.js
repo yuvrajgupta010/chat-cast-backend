@@ -147,6 +147,12 @@ exports.searchUser = async (req, res, next) => {
         {
           _id: { $nin: [...userBlacklist] },
         },
+        {
+          blockedUsers: { $nin: [userId] },
+        },
+        {
+          isAccountVerified: true,
+        },
       ],
     })
       .select({
