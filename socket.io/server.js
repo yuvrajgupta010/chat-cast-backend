@@ -8,7 +8,6 @@ module.exports = function (io, socket) {
     }
     const rooms = data.rooms;
     const userId = socket.jwtPayload.userId;
-
     // join the rooms
     rooms.forEach((room) => {
       socket.join(room); // all the other room
@@ -19,13 +18,16 @@ module.exports = function (io, socket) {
     // Notifying the users
     const listOfOnlineUsers = [];
 
+    const joinId = userId;
     for (const userId of rooms) {
       const isReceiverOnline = await checkIsUserOnline(userId);
+      console.log(isReceiverOnline, userId);
       if (isReceiverOnline) {
-        listOfOnlineUsers.push(userId);
-        socket
-          .to(userId)
-          .emit("user-online-status", { userId, status: "online" });
+        listOfOnlineUsers.push({ receiverId: userId, isReceiverOnline });
+        socket.to(userId).emit("user-online-status", {
+          receiverId: joinId,
+          isReceiverOnline: true,
+        });
       }
     }
     ////////////////////////////
@@ -47,6 +49,22 @@ module.exports = function (io, socket) {
     );
   });
 
+  socket.on("join-new-chat", async (receiverId, data, cb) => {
+    const userId = socket.jwtPayload.userId;
+    socket.join(receiverId);
+    const isReceiverOnline = await checkIsUserOnline(receiverId);
+    cb({
+      status: "success",
+      isReceiverOnline: isReceiverOnline,
+    });
+    if (!isReceiverOnline) return;
+    socket.to(receiverId).emit("new-chat", data);
+  });
+
+  socket.on("join-a-room", (roomId) => {
+    socket.join(roomId);
+  });
+
   socket.on("send-message", async (receiverId, data) => {
     const isReceiverOnline = await checkIsUserOnline(receiverId);
     if (!isReceiverOnline) return;
@@ -64,7 +82,7 @@ module.exports = function (io, socket) {
 
     const isReceiverOnline = await checkIsUserOnline(receiverId);
     if (!isReceiverOnline) return;
-    socket.to(receiverId).emit("mark-message-recieve", { readerId: userId });
+    socket.to(receiverId).emit("mark-message-read", { readerId: userId });
   });
 
   socket.on("typing:start", async (receiverId) => {
@@ -104,9 +122,10 @@ module.exports = function (io, socket) {
         );
         if (otherOnlineUser) {
           // Notify the other online users that the current user has left the room
-          socket
-            .to(room)
-            .emit("user-online-status", { userId, status: "offline" });
+          socket.to(room).emit("user-online-status", {
+            receiverId: userId,
+            isReceiverOnline: false,
+          });
         }
       }
     }

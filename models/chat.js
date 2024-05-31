@@ -34,6 +34,7 @@ const chatSchema = new Schema(
         "For group chat, isGroupOpen is required",
       ],
     },
+    totalUnreadMessages: Number,
   },
   { timestamps: true }
 );

@@ -34,15 +34,10 @@ exports.getChatList = async (req, res, next) => {
       .sort({ updatedAt: -1 }) // Sort by updatedAt in descending order (most recent first)
       .select({ chatName: 0, creator: 0, isGroupOpen: 0 })
       .populate("lastMessage")
-      .populate("users", {
-        select: {
-          _id: 1,
-          email: 1,
-          "profile.fullName": 1,
-          "profile.profileImageURL": 1,
-          "profile.about": 1,
-        },
-      })
+      .populate(
+        "users",
+        "email profile.fullName profile.profileImageURL profile.about"
+      )
       .exec();
 
     const deletedChatList = await Chat.find({
@@ -60,15 +55,10 @@ exports.getChatList = async (req, res, next) => {
     })
       .select({ chatName: 0, creator: 0, isGroupOpen: 0 })
       .populate("lastMessage")
-      .populate("users", {
-        select: {
-          _id: 1,
-          email: 1,
-          "profile.fullName": 1,
-          "profile.profileImageURL": 1,
-          "profile.about": 1,
-        },
-      })
+      .populate(
+        "users",
+        "email profile.fullName profile.profileImageURL profile.about"
+      )
       .exec();
 
     // Find unread messages
@@ -83,7 +73,7 @@ exports.getChatList = async (req, res, next) => {
           { chat: { $in: chatIds } },
           { messageStatus: { $in: ["sent", "delivered"] } },
         ],
-      }).select({ chat: 1, _id: 1, messageStatus: 1 });
+      }).select({ chat: 1, _id: 1, messageStatus: 1, sender: 1 });
 
       if (unreadMessages.length > 0) {
         const undeliveredMessage = unreadMessages.filter(
@@ -112,9 +102,12 @@ exports.getChatList = async (req, res, next) => {
             continue;
           }
           // user is not last sender
-          const countUnreadMessages = unreadMessages.filter(
-            (message) => message.chat.toString() === chat.id
-          );
+          const countUnreadMessages = unreadMessages.filter((message) => {
+            return (
+              message.chat.toString() === chat.id &&
+              message.sender.toString() !== userId
+            );
+          });
           if (countUnreadMessages.length > 0) {
             chat.totalUnreadMessages = countUnreadMessages.length;
           }
@@ -150,7 +143,7 @@ exports.getMessages = async (req, res, next) => {
     const noOfSkip = (parsedOffset - 1) * limit;
 
     const messages = await Message.find({
-      $and: [{ chat: mongoose.Types.ObjectId(chatId) }, {}],
+      $and: [{ chat: chatId }, {}],
     })
       .sort({ createdAt: -1 })
       .limit(parsedLimit + 1) // +1 because we want to know the message is end or not
@@ -175,6 +168,7 @@ exports.getMessages = async (req, res, next) => {
   }
 };
 
+//TODO: Add tranction
 exports.sendMessage = async (req, res, next) => {
   try {
     expressValidation(req);
@@ -188,10 +182,7 @@ exports.sendMessage = async (req, res, next) => {
       isGroupChat: false,
       users: {
         $size: 2,
-        $all: [
-          mongoose.Types.ObjectId(receiverId),
-          mongoose.Types.ObjectId(userId),
-        ],
+        $all: [receiverId, userId],
       },
     });
 
@@ -200,12 +191,13 @@ exports.sendMessage = async (req, res, next) => {
       isChatNew = true;
       chat = await Chat.create({
         isGroupChat: false,
-        users: [
-          mongoose.Types.ObjectId(receiverId),
-          mongoose.Types.ObjectId(userId),
-        ],
-        creator: mongoose.Types.ObjectId(userId),
+        users: [receiverId, userId],
+        creator: userId,
       });
+      chat.populate(
+        "users",
+        "email profile.fullName profile.profileImageURL profile.about"
+      );
     }
 
     if (chat.chatDeletedFor.length > 0) {
@@ -216,7 +208,7 @@ exports.sendMessage = async (req, res, next) => {
 
     const messageData = {
       chat: chat._id,
-      sender: mongoose.Types.ObjectId(userId),
+      sender: userId,
       messageType,
       messageContent,
       messageStatus: "sent",
@@ -236,6 +228,7 @@ exports.sendMessage = async (req, res, next) => {
 
     const responseData = {
       message,
+      chatIsNew: false,
     };
 
     if (isChatNew) {
@@ -247,6 +240,34 @@ exports.sendMessage = async (req, res, next) => {
     return res.status(201).json({
       data: responseData,
       message: "Message sent successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.updateMessageStatus = async (req, res, next) => {
+  try {
+    expressValidation(req);
+    const { chatId } = req.params;
+    const { messageStatus = "read" } = req.body;
+    const {
+      jwtPayload: { email, userId },
+    } = req;
+    console.log(chatId);
+    const message = await Message.updateMany(
+      {
+        $and: [
+          { chat: chatId },
+          { messageStatus: { $ne: messageStatus } },
+          { sender: { $ne: userId } },
+        ],
+      },
+      { $set: { messageStatus: messageStatus } }
+    );
+    console.log(message);
+    return res.status(200).json({
+      message: "Messages status updated successfully",
     });
   } catch (error) {
     next(error);

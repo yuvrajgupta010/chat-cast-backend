@@ -8,7 +8,6 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const passport = require("passport");
 const socketIo = require("socket.io");
-require("./configs/redis.js");
 
 // helper or util
 const date = require("./helpers/date");
@@ -66,21 +65,21 @@ const io = socketIo(httpServer, {
     ],
     credentials: true,
   },
-  connectionStateRecovery: {
-    // the backup duration of the sessions and the packets
-    maxDisconnectionDuration: 2 * 60 * 1000,
-    // whether to skip middlewares upon successful recovery
-    skipMiddlewares: true,
-  },
+  // connectionStateRecovery: {
+  //   // the backup duration of the sessions and the packets
+  //   maxDisconnectionDuration: 2 * 60 * 1000,
+  //   // whether to skip middlewares upon successful recovery
+  //   skipMiddlewares: true,
+  // },
 });
 
 io.use((socket, next) => {
   let accessToken;
-  if (process.env.SERVER_ENV === "DEV") {
-    accessToken = socket.handshake.query.accessToken;
-  } else {
-    accessToken = socket.handshake.auth.accessToken;
-  }
+  // if (process.env.SERVER_ENV === "DEV") {
+  //   accessToken = socket.handshake.query.accessToken;
+  // } else {
+  accessToken = socket.handshake.auth.accessToken;
+  // }
   if (accessToken) {
     jwtVerifyToken(accessToken, (err, jwtPayload) => {
       if (err) {

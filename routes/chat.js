@@ -54,6 +54,20 @@ router.post(
   chatController.sendMessage
 );
 
+//TODO: add validation
+router.post(
+  "/update-message-status/:chatId",
+  passportJWT,
+  [
+    param("chatId")
+      .trim()
+      .notEmpty()
+      .isMongoId()
+      .withMessage("Invalid MongoDB ObjectId"),
+  ],
+  chatController.updateMessageStatus
+);
+
 router.post(
   "/get-upload-url",
   passportJWT,
@@ -87,4 +101,4 @@ router.post(
   chatController.getDownloadUrlForFile
 );
 
-router.module.exports = router;
+module.exports = router;

@@ -145,7 +145,7 @@ exports.searchUser = async (req, res, next) => {
           ],
         },
         {
-          _id: { $nin: [...userBlacklist] },
+          _id: { $nin: [...userBlacklist, userId] },
         },
         {
           blockedUsers: { $nin: [userId] },

@@ -43,12 +43,6 @@ const messageSchema = new Schema(
     },
     filePath: {
       type: String,
-      required: [
-        function () {
-          return this.messageType !== "text" || this.message !== "notification";
-        },
-        "file path is required if you're message is file",
-      ],
     },
   },
   { timestamps: true }
