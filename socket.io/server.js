@@ -10,22 +10,23 @@ module.exports = function (io, socket) {
     const userId = socket.jwtPayload.userId;
     // join the rooms
     rooms.forEach((room) => {
-      socket.join(room); // all the other room
+      socket.join(room.chatId); // all the chat rooms are joined
     });
-    socket.join(userId); // own room
+    socket.join(userId);
     //////////////////////////
 
     // Notifying the users
     const listOfOnlineUsers = [];
 
-    const joinId = userId;
-    for (const userId of rooms) {
-      const isReceiverOnline = await checkIsUserOnline(userId);
-      console.log(isReceiverOnline, userId);
+    const joinerId = userId;
+    for (const room of rooms) {
+      const { receiverId, chatId: roomId } = room;
+      const isReceiverOnline = await checkIsUserOnline(receiverId);
+      // console.log(isReceiverOnline, userId);
       if (isReceiverOnline) {
-        listOfOnlineUsers.push({ receiverId: userId, isReceiverOnline });
-        socket.to(userId).emit("user-online-status", {
-          receiverId: joinId,
+        listOfOnlineUsers.push({ receiverId: receiverId, isReceiverOnline });
+        socket.to(roomId).emit("user-online-status", {
+          receiverId: joinerId,
           isReceiverOnline: true,
         });
       }
@@ -40,7 +41,7 @@ module.exports = function (io, socket) {
 
     // Save the data in redis for future use in communitcation
     const dataForRedis = {
-      joinedRooms: rooms,
+      joinedRooms: rooms.map((room) => room.chatId),
     };
 
     await redisClient.set(
@@ -49,61 +50,109 @@ module.exports = function (io, socket) {
     );
   });
 
-  socket.on("join-new-chat", async (receiverId, data, cb) => {
+  socket.on("join-new-chat", async (receiverId, roomId, data, cb) => {
+    if (!receiverId || !roomId || !data) {
+      socket.emit("error", { message: "Invalid data" });
+    }
     const userId = socket.jwtPayload.userId;
-    socket.join(receiverId);
+    socket.join(roomId);
+
     const isReceiverOnline = await checkIsUserOnline(receiverId);
     cb({
       status: "success",
       isReceiverOnline: isReceiverOnline,
     });
+
+    // updating response
+    const redisResponse = await redisClient.get(
+      `chat-cast:userId:${userId}` // room is userId of other user
+    );
+    let { joinedRooms } = JSON.parse(redisResponse);
+    joinedRooms.push(roomId);
+    joinedRooms = [...new Set(joinedRooms)];
+    await redisClient.set(
+      `chat-cast:userId:${userId}`,
+      JSON.stringify({ joinedRooms })
+    );
+    ////////////////////////////////
+
     if (!isReceiverOnline) return;
-    socket.to(receiverId).emit("new-chat", data);
+    io.to(receiverId).emit("new-chat", data);
   });
 
-  socket.on("join-a-room", (roomId) => {
+  //TODO: need to think
+  socket.on("join-a-room", async (roomId) => {
+    if (!roomId) {
+      socket.emit("error", { message: "Invalid data" });
+    }
+    const userId = socket.jwtPayload.userId;
+    const redisResponse = await redisClient.get(
+      `chat-cast:userId:${userId}` // room is userId of other user
+    );
+    let { joinedRooms } = JSON.parse(redisResponse);
+    joinedRooms.push(roomId);
+    joinedRooms = [...new Set(joinedRooms)];
+    await redisClient.set(
+      `chat-cast:userId:${userId}`,
+      JSON.stringify({ joinedRooms })
+    );
     socket.join(roomId);
   });
 
-  socket.on("send-message", async (receiverId, data) => {
+  socket.on("send-message", async (receiverId, roomId, data) => {
+    if (!receiverId || !roomId || !data) {
+      socket.emit("error", { message: "Invalid data" });
+    }
     const isReceiverOnline = await checkIsUserOnline(receiverId);
     if (!isReceiverOnline) return;
-    socket.to(receiverId).emit("new-message", data);
+    socket.to(roomId).emit("new-message", data);
   });
 
-  socket.on("send-message:new-contact", async (receiverId, data) => {
+  socket.on("send-message:new-contact", async (receiverId, roomId, data) => {
+    if (!receiverId || !roomId || !data) {
+      socket.emit("error", { message: "Invalid data" });
+    }
     const isReceiverOnline = await checkIsUserOnline(receiverId);
     if (!isReceiverOnline) return;
-    socket.to(receiverId).emit("new-message:new-contact", data);
+    socket.to(roomId).emit("new-message:new-contact", data);
   });
 
-  socket.on("mark-message-read", async (receiverId) => {
+  socket.on("mark-message-read", async (receiverId, roomId) => {
+    if (!receiverId || !roomId) {
+      socket.emit("error", { message: "Invalid data" });
+    }
     const userId = socket.jwtPayload.userId;
 
     const isReceiverOnline = await checkIsUserOnline(receiverId);
     if (!isReceiverOnline) return;
-    socket.to(receiverId).emit("mark-message-read", { readerId: userId });
+    socket.to(roomId).emit("mark-message-read", { readerId: userId });
   });
 
-  socket.on("typing:start", async (receiverId) => {
+  socket.on("typing:start", async (receiverId, roomId) => {
+    if (!receiverId || !roomId) {
+      socket.emit("error", { message: "Invalid data" });
+    }
     const userId = socket.jwtPayload.userId;
     const isReceiverOnline = await checkIsUserOnline(receiverId);
     if (!isReceiverOnline) return;
-    socket.to(receiverId).emit("typing:start", { typerId: userId });
+    socket.to(roomId).emit("typing:start", { typerId: userId });
   });
 
-  socket.on("typing:stop", async (receiverId) => {
+  socket.on("typing:stop", async (receiverId, roomId) => {
+    if (!receiverId || !roomId) {
+      socket.emit("error", { message: "Invalid data" });
+    }
     const userId = socket.jwtPayload.userId;
     const isReceiverOnline = await checkIsUserOnline(receiverId);
     if (!isReceiverOnline) return;
-    socket.to(receiverId).emit("typing:stop", { typerId: userId });
+    socket.to(roomId).emit("typing:stop", { typerId: userId });
   });
 
-  socket.on("delete-chat:from-both-side", async (receiverId, data) => {
+  socket.on("delete-chat:from-both-side", async (receiverId, roomId, data) => {
     const isReceiverOnline = await checkIsUserOnline(receiverId);
     if (!isReceiverOnline) return;
     socket
-      .to(receiverId)
+      .to(roomId)
       .emit("delete-chat:from-both-side", { chatId: data.chatId });
   });
 
@@ -117,16 +166,11 @@ module.exports = function (io, socket) {
     if (getUserJoinedRooms) {
       const { joinedRooms } = JSON.parse(getUserJoinedRooms);
       for (const room of joinedRooms) {
-        const otherOnlineUser = await redisClient.get(
-          `chat-cast:userId:${room}` // room is userId of other user
-        );
-        if (otherOnlineUser) {
-          // Notify the other online users that the current user has left the room
-          socket.to(room).emit("user-online-status", {
-            receiverId: userId,
-            isReceiverOnline: false,
-          });
-        }
+        // Notify the other online users that the current user has left the room
+        socket.to(room).emit("user-online-status", {
+          receiverId: userId,
+          isReceiverOnline: false,
+        });
       }
     }
 

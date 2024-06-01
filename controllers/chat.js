@@ -254,7 +254,7 @@ exports.updateMessageStatus = async (req, res, next) => {
     const {
       jwtPayload: { email, userId },
     } = req;
-    console.log(chatId);
+
     const message = await Message.updateMany(
       {
         $and: [
