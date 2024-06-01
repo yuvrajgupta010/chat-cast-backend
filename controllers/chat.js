@@ -287,7 +287,7 @@ exports.getUploadUrlForFile = async (req, res, next) => {
     const signUrlForUpload = await putS3ObjectURL(uploadKey, contentType);
 
     return res.status(200).json({
-      signUrlForUpload,
+      data: { presignedURL: signUrlForUpload, uploadPath: uploadKey },
       message: "Url generated successfully",
     });
   } catch (error) {
@@ -301,7 +301,7 @@ exports.getDownloadUrlForFile = async (req, res, next) => {
     const signDownloadUrl = await getS3ObectURL(s3_key);
 
     return res.status(200).json({
-      signDownloadUrl,
+      data: { presignedURL: signDownloadUrl },
       message: "Download URL generated successfully",
     });
   } catch (error) {
