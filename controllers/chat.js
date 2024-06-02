@@ -170,6 +170,8 @@ exports.getMessages = async (req, res, next) => {
 
 //TODO: Add tranction
 exports.sendMessage = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
   try {
     expressValidation(req);
     const {
@@ -184,17 +186,20 @@ exports.sendMessage = async (req, res, next) => {
         $size: 2,
         $all: [receiverId, userId],
       },
-    });
+    }).session(session);
 
     let isChatNew = false;
     if (!chat) {
       isChatNew = true;
-      chat = await Chat.create({
-        isGroupChat: false,
-        users: [receiverId, userId],
-        creator: userId,
-      });
-      chat.populate(
+      chat = await Chat.create(
+        {
+          isGroupChat: false,
+          users: [receiverId, userId],
+          creator: userId,
+        },
+        { session: session }
+      );
+      await chat.populate(
         "users",
         "email profile.fullName profile.profileImageURL profile.about"
       );
@@ -221,10 +226,12 @@ exports.sendMessage = async (req, res, next) => {
       messageData.filePath = req.body.filePath;
     }
 
-    const message = await Message.create(messageData);
+    const message = await Message.create(messageData, { session });
 
     chat.lastMessage = message;
-    chat.save();
+    chat.save({ session });
+
+    await session.commitTransaction();
 
     const responseData = {
       message,
@@ -242,11 +249,16 @@ exports.sendMessage = async (req, res, next) => {
       message: "Message sent successfully",
     });
   } catch (error) {
+    await session.abortTransaction();
     next(error);
+  } finally {
+    session.endSession();
   }
 };
 
 exports.updateMessageStatus = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
   try {
     expressValidation(req);
     const { chatId } = req.params;
@@ -263,57 +275,65 @@ exports.updateMessageStatus = async (req, res, next) => {
           { sender: { $ne: userId } },
         ],
       },
-      { $set: { messageStatus: messageStatus } }
+      { $set: { messageStatus: messageStatus } },
+      { session }
     );
-    console.log(message);
+
+    await session.commitTransaction();
     return res.status(200).json({
       message: "Messages status updated successfully",
     });
   } catch (error) {
+    await session.abortTransaction();
     next(error);
+  } finally {
+    session.endSession();
   }
 };
 
-exports.deleteChat = async (req, res, next) => {
-  try {
-    expressValidation(req);
+// exports.deleteChat = async (req, res, next) => {
+//   try {
+//     expressValidation(req);
 
-    const { chatId } = req.body;
-    const {
-      jwtPayload: { email, userId },
-    } = req;
+//     const { chatId } = req.body;
+//     const {
+//       jwtPayload: { email, userId },
+//     } = req;
 
-    const chat = await Chat.findById(chatId);
+//     const chat = await Chat.findById(chatId);
 
-    if (!chat) {
-      return res.status(404).json({
-        message: "Chat not found",
-      });
-    }
+//     if (!chat) {
+//       return res.status(404).json({
+//         message: "Chat not found",
+//       });
+//     }
 
-    const isChatAlreadyDeletedForUser =
-      chat.chatDeletedFor.findIndex((user) => user.toString() === userId) !==
-      -1;
-    if (isChatAlreadyDeletedForUser) {
-      const error = new Error("Chat already deleted");
-      error.statusCode = 400;
-      throw error;
-    }
+//     const isChatAlreadyDeletedForUser =
+//       chat.chatDeletedFor.findIndex((user) => user.toString() === userId) !==
+//       -1;
+//     if (isChatAlreadyDeletedForUser) {
+//       const error = new Error("Chat already deleted");
+//       error.statusCode = 400;
+//       throw error;
+//     }
 
-    if (chat.chatDeletedFor.length) {
-      const deleteChat = await Chat.deleteOne({ _id: chat._id });
-    } else {
-      chat.chatDeletedFor.push(userId);
-      await chat.save();
-    }
+//     let isParitalDelete = true;
+//     if (chat.chatDeletedFor.length) {
+//       isParitalDelete = false;
+//       const deleteChat = await Chat.deleteOne({ _id: chat._id });
+//     } else {
+//       chat.chatDeletedFor.push(userId);
+//       await chat.save();
+//     }
 
-    return res.status(200).json({
-      message: "Chat deleted successfully",
-    });
-  } catch (error) {
-    next(error);
-  }
-};
+//     return res.status(200).json({
+//       data: { isParitalDelete },
+//       message: "Chat deleted successfully",
+//     });
+//   } catch (error) {
+//     next(error);
+//   }
+// };
 
 exports.getUploadUrlForFile = async (req, res, next) => {
   try {

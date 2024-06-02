@@ -68,18 +68,18 @@ router.post(
   chatController.updateMessageStatus
 );
 
-router.delete(
-  "/delete-chat",
-  passportJWT,
-  [
-    body("chatId")
-      .trim()
-      .notEmpty()
-      .isMongoId()
-      .withMessage("Invalid MongoDB ObjectId"),
-  ],
-  chatController.deleteChat
-);
+// router.delete(
+//   "/delete-chat",
+//   passportJWT,
+//   [
+//     body("chatId")
+//       .trim()
+//       .notEmpty()
+//       .isMongoId()
+//       .withMessage("Invalid MongoDB ObjectId"),
+//   ],
+//   chatController.deleteChat
+// );
 
 router.post(
   "/get-upload-url",
