@@ -246,6 +246,14 @@ exports.login = async (req, res, next) => {
 
     const { email, password } = req.body;
 
+    if (!req.user.isAccountVerified) {
+      const error = new Error(
+        "Account not verified, please verify your email first!"
+      );
+      error.status = 403;
+      throw error;
+    }
+
     const passwordResult = await comparePassword(password, req.user.password);
 
     if (!passwordResult) {
