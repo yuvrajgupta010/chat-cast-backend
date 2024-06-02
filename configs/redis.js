@@ -1,7 +1,7 @@
-const { createClient } = require("redis");
+const Redis = require("ioredis");
 
 // Create a Redis client
-const redisClient = createClient();
+const redisClient = new Redis();
 
 // Error handling
 redisClient.on("error", (err) => {
@@ -19,6 +19,6 @@ redisClient.on("ready", () => {
 });
 
 // Connect to the Redis server
-redisClient.connect().catch(console.error);
+// redisClient.connect().catch(console.error);
 
 module.exports = redisClient;

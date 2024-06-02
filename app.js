@@ -8,6 +8,8 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const passport = require("passport");
 const socketIo = require("socket.io");
+const { createAdapter } = require("@socket.io/redis-adapter");
+const Redis = require("ioredis");
 
 // helper or util
 const date = require("./helpers/date");
@@ -72,6 +74,13 @@ const io = socketIo(httpServer, {
     skipMiddlewares: true,
   },
 });
+
+// Create Redis clients for pub and sub using ioredis
+const pubClient = new Redis();
+const subClient = pubClient.duplicate();
+
+// Use the Redis adapter
+io.adapter(createAdapter(pubClient, subClient));
 
 io.use((socket, next) => {
   let accessToken;
