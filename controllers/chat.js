@@ -170,8 +170,6 @@ exports.getMessages = async (req, res, next) => {
 
 //TODO: Add tranction
 exports.sendMessage = async (req, res, next) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
   try {
     expressValidation(req);
     const {
@@ -186,20 +184,17 @@ exports.sendMessage = async (req, res, next) => {
         $size: 2,
         $all: [receiverId, userId],
       },
-    }).session(session);
+    });
 
     let isChatNew = false;
     if (!chat) {
       isChatNew = true;
-      chat = await Chat.create(
-        {
-          isGroupChat: false,
-          users: [receiverId, userId],
-          creator: userId,
-        },
-        { session: session }
-      );
-      await chat.populate(
+      chat = await Chat.create({
+        isGroupChat: false,
+        users: [receiverId, userId],
+        creator: userId,
+      });
+      chat.populate(
         "users",
         "email profile.fullName profile.profileImageURL profile.about"
       );
@@ -226,12 +221,10 @@ exports.sendMessage = async (req, res, next) => {
       messageData.filePath = req.body.filePath;
     }
 
-    const message = await Message.create(messageData, { session });
+    const message = await Message.create(messageData);
 
     chat.lastMessage = message;
-    chat.save({ session });
-
-    await session.commitTransaction();
+    chat.save();
 
     const responseData = {
       message,
@@ -249,16 +242,11 @@ exports.sendMessage = async (req, res, next) => {
       message: "Message sent successfully",
     });
   } catch (error) {
-    await session.abortTransaction();
     next(error);
-  } finally {
-    session.endSession();
   }
 };
 
 exports.updateMessageStatus = async (req, res, next) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
   try {
     expressValidation(req);
     const { chatId } = req.params;
@@ -275,19 +263,14 @@ exports.updateMessageStatus = async (req, res, next) => {
           { sender: { $ne: userId } },
         ],
       },
-      { $set: { messageStatus: messageStatus } },
-      { session }
+      { $set: { messageStatus: messageStatus } }
     );
-
-    await session.commitTransaction();
+    console.log(message);
     return res.status(200).json({
       message: "Messages status updated successfully",
     });
   } catch (error) {
-    await session.abortTransaction();
     next(error);
-  } finally {
-    session.endSession();
   }
 };
 
@@ -317,9 +300,7 @@ exports.updateMessageStatus = async (req, res, next) => {
 //       throw error;
 //     }
 
-//     let isParitalDelete = true;
 //     if (chat.chatDeletedFor.length) {
-//       isParitalDelete = false;
 //       const deleteChat = await Chat.deleteOne({ _id: chat._id });
 //     } else {
 //       chat.chatDeletedFor.push(userId);
@@ -327,7 +308,6 @@ exports.updateMessageStatus = async (req, res, next) => {
 //     }
 
 //     return res.status(200).json({
-//       data: { isParitalDelete },
 //       message: "Chat deleted successfully",
 //     });
 //   } catch (error) {
