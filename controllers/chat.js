@@ -265,7 +265,7 @@ exports.updateMessageStatus = async (req, res, next) => {
       },
       { $set: { messageStatus: messageStatus } }
     );
-    console.log(message);
+
     return res.status(200).json({
       message: "Messages status updated successfully",
     });
