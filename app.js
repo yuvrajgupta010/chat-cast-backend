@@ -82,6 +82,10 @@ const subClient = pubClient.duplicate();
 // Use the Redis adapter
 io.adapter(createAdapter(pubClient, subClient));
 
+pubClient.on("error", (err) => {
+  console.error("Redis error in app.js:", err);
+});
+
 io.use((socket, next) => {
   let accessToken;
   // if (process.env.SERVER_ENV === "DEV") {
