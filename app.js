@@ -8,7 +8,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const passport = require("passport");
 const socketIo = require("socket.io");
-const { createAdapter } = require("@socket.io/redis-adapter");
+const { createShardedAdapter } = require("@socket.io/redis-adapter");
 const Redis = require("ioredis");
 
 // helper or util
@@ -65,6 +65,7 @@ const io = socketIo(httpServer, {
       "http://chat-cast.personal.yuvrajgupta.in",
       "https://chat-cast.personal.yuvrajgupta.in",
     ],
+    methods: ["GET", "POST"],
     credentials: true,
   },
   connectionStateRecovery: {
@@ -80,7 +81,7 @@ const pubClient = new Redis();
 const subClient = pubClient.duplicate();
 
 // Use the Redis adapter
-io.adapter(createAdapter(pubClient, subClient));
+io.adapter(createShardedAdapter(pubClient, subClient));
 
 pubClient.on("error", (err) => {
   console.error("Redis error in app.js:", err);
