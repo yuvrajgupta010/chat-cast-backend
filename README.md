@@ -29,6 +29,7 @@ cd chat-cast-backend
 yarn install
 ```
 
+## Setup
 Add .env file with own keys:
 ```bash
 SERVER_ENV=""
@@ -70,8 +71,14 @@ AWS_S3_ACCESS_KEY_ID=""
 AWS_S3_SECRET_ACCESS_KEY=""
 ```
 
-Fire up express serve
+## Usage
+To start the server in development mode:
 ```bash
-npm run dev // for development mode
-npm start // for production mode
+npm run dev
+```
+
+To start the server in production mode:
+```bash
+npm start
+```
 
