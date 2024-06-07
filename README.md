@@ -27,3 +27,44 @@ To get started, clone the repository and install the dependencies:
 git clone [https://github.com/yuvrajgupta010/chat-cast-backend.git](https://github.com/yuvrajgupta010/chat-cast-backend.git)
 cd chat-cast-backend
 yarn install
+```
+
+```bash
+SERVER_ENV=""
+MAIN_APP_DOMAIN=""
+
+# JWT
+JWT_SECRET_KEY=""
+JWT_FORGET_TOKEN_KEY=""
+
+# Sendgrid
+SENDGRID_SECRET_KEY=""
+SENDGRID_VERIFIED_EMAIL=""
+
+# Bcrypt
+BCRYPT_SECRET_KEY="a"
+
+# Google auth
+GOOGLE_CLIENT_ID=""
+GOOGLE_CLIENT_SECRET=""
+FAILURE_REDIRECT_URL_PATH="" # need to be chanage in production
+
+# EJS template
+STATIC_FILE_S3_ADDRESS=""
+
+
+# MongoDB
+MONGO_DB_USERNAME=""
+MONGO_DB_PASSWORD=""
+
+# Redis server
+REDIS_HOST_ADDRESS=""
+REDIS_HOST_PORT=""
+
+#AWS
+AWS_REGION=""
+#AWS S3 chat cast account
+AWS_S3_BUCKET_NAME=""
+AWS_S3_ACCESS_KEY_ID=""
+AWS_S3_SECRET_ACCESS_KEY=""
+```
