@@ -24,7 +24,7 @@ The backend of Chat Cast is designed to facilitate seamless real-time communicat
 To get started, clone the repository and install the dependencies:
 
 ```sh
-git clone [https://github.com/yuvrajgupta010/chat-cast-backend.git](https://github.com/yuvrajgupta010/chat-cast-backend.git)
+git clone https://github.com/yuvrajgupta010/chat-cast-backend.git
 cd chat-cast-backend
 yarn install
 ```
