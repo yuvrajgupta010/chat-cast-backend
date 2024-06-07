@@ -82,3 +82,6 @@ To start the server in production mode:
 npm start
 ```
 
+## Health Check of server
+After server start, just to check the start successfully 
+Open up your browser and just go on localhost:8080/health-check
