@@ -17,7 +17,6 @@ The backend of Chat Cast is designed to facilitate seamless real-time communicat
 - **Validation**: Express-validator ensures robust request validation.
 - **Session Management**: Express-session with Redis for session management.
 - **Template Engine**: EJS is used for server-side rendering.
-- **PDF Generation**: PDFKit enables dynamic PDF creation.
 - **Development Tools**: Nodemon for automatic server restarts during development.
 
 ## Installation
