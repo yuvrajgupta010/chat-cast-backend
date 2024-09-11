@@ -36,7 +36,7 @@ const getS3ObectURL = async (key) => {
     Key: key,
   });
 
-  const url = await getSignedUrl(s3Client, command, { expiresIn: 30 }); // Expires in 30 seconds
+  const url = await getSignedUrl(s3Client, command, { expiresIn: 300 }); // Expires in 30 seconds
   return url;
 };
 
@@ -58,7 +58,7 @@ const putS3ObjectURL = async (key, contentType, isPublic) => {
     ContentType: contentType,
   });
 
-  const url = await getSignedUrl(s3Client, command, { expiresIn: 60 }); // Expires in 1 minute
+  const url = await getSignedUrl(s3Client, command, { expiresIn: 600 }); // Expires in 1 minute
   return url;
 };
 
