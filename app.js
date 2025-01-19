@@ -32,10 +32,14 @@ app.use(
       "https://chat-cast.personal.yuvrajgupta.in",
     ],
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
-    // preflightContinue: false,
-    // optionsSuccessStatus: 204,
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
     credentials: true,
-  })
+  }),
+  (req, res, next) => {
+    console.log(req);
+    next();
+  }
 );
 app.use(express.static(path.join(__dirname, "public")));
 app.use(bodyParser.urlencoded({ extended: false }));
