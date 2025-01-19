@@ -35,11 +35,7 @@ app.use(
     preflightContinue: false,
     optionsSuccessStatus: 204,
     credentials: true,
-  }),
-  (req, res, next) => {
-    console.log(req);
-    next();
-  }
+  })
 );
 app.use(express.static(path.join(__dirname, "public")));
 app.use(bodyParser.urlencoded({ extended: false }));
