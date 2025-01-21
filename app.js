@@ -24,13 +24,20 @@ const { jwtVerifyToken } = require("./helpers/jwt");
 const app = express();
 const PORT = process.env.PORT || 8080;
 
+//allowed origins
+let origins;
+if (process.env.SERVER_ENV === "PROD") {
+  origins = [
+    "http://chat-cast.personal.yuvrajgupta.in",
+    "https://chat-cast.personal.yuvrajgupta.in",
+  ];
+} else {
+  origins = ["http://localhost:5173", "http://localhost:3000"];
+}
+
 app.use(
   cors({
-    origin: [
-      "http://localhost:3000",
-      "http://chat-cast.personal.yuvrajgupta.in",
-      "https://chat-cast.personal.yuvrajgupta.in",
-    ],
+    origin: origins,
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
     preflightContinue: false,
     optionsSuccessStatus: 204,
