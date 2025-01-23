@@ -4,9 +4,10 @@ const VIEW_FOLDER_PATH = path.join(
   path.dirname(require.main.filename),
   "views"
 );
-
 module.exports = {
   // env
+  REDIS_HOST_ADDRESS: process.env.REDIS_HOST_ADDRESS,
+  REDIS_HOST_PORT: process.env.REDIS_HOST_PORT,
   // for sign up and authentication
   ACCOUNT_CREATED_BY_EMAIL: "email",
   ACCOUNT_CREATED_BY_FACEBOOK: "facebook",

@@ -1,0 +1,31 @@
+version: "3.8"
+services:
+  chat-cast-api:
+    container_name: chat-cast
+    depends_on:
+      redis-server:
+        condition: service_healthy
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health-check"]
+      interval: 50s
+      timeout: 20s
+      retries: 3
+  redis-server:
+    image: redis:latest
+    container_name: redis-server
+    ports:
+      - "6000:6379"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3

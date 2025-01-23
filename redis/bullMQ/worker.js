@@ -10,12 +10,12 @@ const {
   RESEND_OTP_TEMPLATE,
   FORGET_PASSWORD_TEMPLATE,
   RESEND_FORGET_PASSWORD_TEMPLATE,
+  REDIS_HOST_ADDRESS,
+  REDIS_HOST_PORT,
 } = require("../../helpers/constant");
 const { sendEmail } = require("../../helpers/sendgrid");
 
 // Environment variables
-const REDIS_HOST_ADDRESS = process.env.REDIS_HOST_ADDRESS;
-const REDIS_HOST_PORT = process.env.REDIS_HOST_PORT;
 const STATIC_FILE_S3_ADDRESS = process.env.STATIC_FILE_S3_ADDRESS;
 const MAIN_APP_DOMAIN = process.env.MAIN_APP_DOMAIN;
 

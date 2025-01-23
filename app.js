@@ -20,6 +20,7 @@ const errorMiddleware = require("./middlewares/error");
 // config
 const { mongoDBConnection } = require("./configs/mongoDB");
 const { jwtVerifyToken } = require("./helpers/jwt");
+const { REDIS_HOST_ADDRESS, REDIS_HOST_PORT } = require("./helpers/constant");
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -84,7 +85,11 @@ const io = socketIo(httpServer, {
 });
 
 // Create Redis clients for pub and sub using ioredis
-const pubClient = new Redis();
+const pubClient = new Redis({
+  port: REDIS_HOST_PORT, // Redis port
+  host: REDIS_HOST_ADDRESS, // Redis host
+  username: "default", // needs Redis >= 6
+});
 const subClient = pubClient.duplicate();
 
 // Use the Redis adapter
