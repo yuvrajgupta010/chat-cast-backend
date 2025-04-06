@@ -1,12 +1,8 @@
 // library
 require("dotenv").config();
+require("module-alias/register");
 const express = require("express");
 const http = require("http");
-const path = require("path");
-const helmet = require("helmet");
-const bodyParser = require("body-parser");
-const cors = require("cors");
-const passport = require("passport");
 const socketIo = require("socket.io");
 const { createShardedAdapter } = require("@socket.io/redis-adapter");
 const Redis = require("ioredis");
@@ -14,42 +10,30 @@ const Redis = require("ioredis");
 // helper or util
 const date = require("./helpers/date");
 
-// middleware
-const errorMiddleware = require("./middlewares/error");
-
 // config
 const { mongoDBConnection } = require("./configs/mongoDB");
 const { jwtVerifyToken } = require("./helpers/jwt");
 const { REDIS_HOST_ADDRESS, REDIS_HOST_PORT } = require("./helpers/constant");
+const middlewares = require("./configs/middlewares");
+
+// APIs
+const apiRoutes = require("./routes/routes");
+
+// ENV import
+const PORT = process.env.PORT || 8080;
+const MAIN_APP_DOMAIN = process.env.MAIN_APP_DOMAIN;
 
 const app = express();
-const PORT = process.env.PORT || 8080;
 
 //allowed origins
 let origins;
 if (process.env.SERVER_ENV === "PROD") {
-  origins = [
-    "http://chat-cast.personal.yuvrajgupta.in",
-    "https://chat-cast.personal.yuvrajgupta.in",
-  ];
+  origins = [`http://${MAIN_APP_DOMAIN}`, `https://${MAIN_APP_DOMAIN}`];
 } else {
   origins = ["http://localhost:5173", "http://localhost:3000"];
 }
 
-app.use(
-  cors({
-    origin: origins,
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
-    preflightContinue: false,
-    optionsSuccessStatus: 204,
-    credentials: true,
-  })
-);
-app.use(express.static(path.join(__dirname, "public")));
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-app.use(helmet());
-app.use(passport.initialize());
+middlewares(app, origins);
 
 // server health check
 app.get("/health-check", (req, res) => {
@@ -61,18 +45,13 @@ app.get("/health-check", (req, res) => {
   res.json(healthCheck);
 });
 
-require("./routes/routes")(app);
-app.use(errorMiddleware);
+apiRoutes(app);
 
 const httpServer = http.createServer(app);
 
 const io = socketIo(httpServer, {
   cors: {
-    origin: [
-      "http://localhost:3000",
-      "http://chat-cast.personal.yuvrajgupta.in",
-      "https://chat-cast.personal.yuvrajgupta.in",
-    ],
+    origin: origins,
     methods: ["GET", "POST"],
     credentials: true,
   },

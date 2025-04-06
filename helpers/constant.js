@@ -5,6 +5,10 @@ const VIEW_FOLDER_PATH = path.join(
   "views"
 );
 module.exports = {
+  // main domain
+  MAIN_APP_DOMAIN: process.env.MAIN_APP_DOMAIN,
+  // Server enviroment
+  SERVER_ENV: process.env.SERVER_ENV,
   // env
   REDIS_HOST_ADDRESS: process.env.REDIS_HOST_ADDRESS,
   REDIS_HOST_PORT: process.env.REDIS_HOST_PORT,
@@ -32,4 +36,8 @@ module.exports = {
   RESEND_FORGET_PASSWORD_TEMPLATE: "resend-forget-password",
   // redis server
   EMAIL_SERVICE_QUEUE: "email-service-queue",
+  // cookies name
+  COOKIE_ACCESS_TOKEN: "accessToken",
+  // AWS S3
+  STATIC_FILE_S3_ADDRESS: process.env.STATIC_FILE_S3_ADDRESS,
 };

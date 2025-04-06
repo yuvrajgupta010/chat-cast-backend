@@ -1,4 +1,4 @@
-const emailServiceQueue = require("../redis/bullMQ/producer");
+const emailServiceQueue = require("@/redis/bullMQ/producer");
 
 /**
  * Adds an email job to the email service queue with specified data

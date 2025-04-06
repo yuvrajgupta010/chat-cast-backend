@@ -1,4 +1,4 @@
-const { jwtForgetTokenVerify } = require("../helpers/jwt");
+const { jwtForgetTokenVerify } = require("@/helpers/jwt");
 
 const JWT_FORGET_TOKEN_KEY = process.env.JWT_FORGET_TOKEN_KEY;
 

@@ -3,7 +3,7 @@ const {
   EMAIL_SERVICE_QUEUE,
   REDIS_HOST_ADDRESS,
   REDIS_HOST_PORT,
-} = require("../../helpers/constant");
+} = require("@/helpers/constant");
 
 const emailServiceQueue = new Queue(EMAIL_SERVICE_QUEUE, {
   connection: {

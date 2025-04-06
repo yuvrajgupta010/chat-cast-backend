@@ -6,7 +6,7 @@ const {
   VIDEO_FILE,
   TEXT_MESSAGE,
   NOTIFICATION_MESSAGE,
-} = require("../helpers/constant");
+} = require("@/helpers/constant");
 
 const Schema = mongoose.Schema;
 

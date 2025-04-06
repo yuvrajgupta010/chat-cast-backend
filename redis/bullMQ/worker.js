@@ -12,8 +12,8 @@ const {
   RESEND_FORGET_PASSWORD_TEMPLATE,
   REDIS_HOST_ADDRESS,
   REDIS_HOST_PORT,
-} = require("../../helpers/constant");
-const { sendEmail } = require("../../helpers/sendgrid");
+} = require("@/helpers/constant");
+const { sendEmail } = require("@/helpers/sendgrid");
 
 // Environment variables
 const STATIC_FILE_S3_ADDRESS = process.env.STATIC_FILE_S3_ADDRESS;

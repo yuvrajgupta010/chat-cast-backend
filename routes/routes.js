@@ -1,15 +1,19 @@
+// API routes
 const authRoutes = require("./auth");
 const userRoutes = require("./user");
 const chatRoutes = require("./chat");
 
+// error middleware
+const errorMiddleware = require("@/middlewares/error");
+
 ///////////////////All initalization imports - start///////////////////////
 // Passport
-require("../configs/passport/socialAuth");
-require("../configs/passport/jwt");
-require("../configs/sendgrid");
+require("@/configs/passport/socialAuth");
+require("@/configs/passport/jwt");
+require("@/configs/sendgrid");
 // Redis
-require("../redis/bullMQ/worker");
-require("../configs/redis.js");
+require("@/redis/bullMQ/worker");
+require("@/configs/redis.js");
 ///////////////////All initalization imports - end///////////////////////
 
 module.exports = function (app) {
@@ -25,4 +29,7 @@ module.exports = function (app) {
     error.message = "404 NOT FOUND";
     next(error);
   });
+
+  // Handle error
+  app.use(errorMiddleware);
 };

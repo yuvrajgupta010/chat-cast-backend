@@ -1,7 +1,7 @@
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const passport = require("passport");
-const User = require("../../models/user");
-const { ACCOUNT_CREATED_BY_GOOGLE } = require("../../helpers/constant");
+const User = require("@/models/user");
+const { ACCOUNT_CREATED_BY_GOOGLE } = require("@/helpers/constant");
 
 passport.use(
   new GoogleStrategy(

@@ -1,5 +1,5 @@
-const redisClient = require("../configs/redis.js");
-const { checkIsUserOnline } = require("../helpers/redis.js");
+const redisClient = require("@/configs/redis.js");
+const { checkIsUserOnline } = require("@/helpers/redis.js");
 
 module.exports = function (io, socket) {
   socket.on("join-rooms-and-show-online", async (data) => {

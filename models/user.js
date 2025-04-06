@@ -3,7 +3,7 @@ const {
   ACCOUNT_CREATED_BY_EMAIL,
   ACCOUNT_CREATED_BY_GOOGLE,
   ACCOUNT_CREATED_BY_FACEBOOK,
-} = require("../helpers/constant");
+} = require("@/helpers/constant");
 
 const Schema = mongoose.Schema;
 

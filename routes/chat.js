@@ -1,9 +1,9 @@
 const express = require("express");
 const { body, query, param } = require("express-validator");
 
-const { passportJWT } = require("../middlewares/passport");
-const chatController = require("../controllers/chat");
-const { IMAGE_FILE, TEXT_MESSAGE } = require("../helpers/constant");
+const { passportJWT } = require("@/middlewares/passport");
+const chatController = require("@/controllers/chat");
+const { IMAGE_FILE, TEXT_MESSAGE } = require("@/helpers/constant");
 
 const router = express.Router();
 

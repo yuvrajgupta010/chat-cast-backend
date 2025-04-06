@@ -2,10 +2,10 @@ const express = require("express");
 const passport = require("passport");
 const { body, query } = require("express-validator");
 
-const User = require("../models/user");
-const authController = require("../controllers/auth");
-const { ACCOUNT_CREATED_BY_EMAIL } = require("../helpers/constant");
-const { forgetTokenVerification } = require("../middlewares/jwt");
+const User = require("@/models/user");
+const authController = require("@/controllers/auth");
+const { ACCOUNT_CREATED_BY_EMAIL } = require("@/helpers/constant");
+const { forgetTokenVerification } = require("@/middlewares/jwt");
 
 const router = express.Router();
 

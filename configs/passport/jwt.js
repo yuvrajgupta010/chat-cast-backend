@@ -1,10 +1,22 @@
 const passport = require("passport");
 const { Strategy, ExtractJwt } = require("passport-jwt");
+const { COOKIE_ACCESS_TOKEN } = require("@/helpers/constant");
 
-const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY; // Use environment variable in production
+const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
+
+const cookieExtractor = (req) => {
+  let token = null;
+  if (req && req.signedCookies) {
+    token = req.signedCookies[COOKIE_ACCESS_TOKEN];
+  }
+  return token;
+};
 
 const options = {
-  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+  jwtFromRequest: ExtractJwt.fromExtractors([
+    cookieExtractor,
+    // ExtractJwt.fromAuthHeaderAsBearerToken(),
+  ]),
   secretOrKey: JWT_SECRET_KEY,
 };
 
