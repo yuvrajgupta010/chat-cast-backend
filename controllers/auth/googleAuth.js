@@ -9,31 +9,6 @@ const {
 const { jwtSignToken } = require("@/helpers/jwt");
 
 const googleAuth = async (req, res, next) => {
-  // const { name, email } = req?.user?._json;
-  // try {
-  //   const findedUser = await User.findOne({ email });
-  //   let savedUser;
-  //   if (!findedUser) {
-  //     const newUser = new User({
-  //       name: name,
-  //       email: email,
-  //     });
-  //     savedUser = await newUser.save();
-  //   }
-  //   const user = {
-  //     email: findedUser?.email || email,
-  //     _id: findedUser?._id || savedUser?._id,
-  //   };
-  //   const { accessToken } = jwtSignToken(user, "7d");
-  //   res.cookie("accessToken", accessToken, {
-  //     httpOnly: true,
-  //     secure: true,
-  //     sameSite: "none",
-  //   });
-  //   return res.redirect(process.env.GOOGLE_AUTH_SUCCESS_URL);
-  // } catch (error) {
-  //   next(error);
-  // }
   const profile = req.user;
   const email = req.user.emails[0].value;
   try {
@@ -53,6 +28,17 @@ const googleAuth = async (req, res, next) => {
         },
       });
       await newUser.save();
+
+      res.cookie(COOKIE_ACCESS_TOKEN, token, {
+        path: "/",
+        domain: SERVER_ENV !== "DEV" ? MAIN_APP_DOMAIN : "localhost",
+        secure: SERVER_ENV !== "DEV",
+        expires,
+        httpOnly: true,
+        signed: true,
+        sameSite: "Strict",
+      });
+
       return res.redirect(process.env.GOOGLE_AUTH_SUCCESS_URL);
     } else {
       if (user?.accountAuthType === ACCOUNT_CREATED_BY_GOOGLE) {

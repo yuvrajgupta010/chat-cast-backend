@@ -7,6 +7,7 @@ const authController = require("@/controllers/auth");
 const { ACCOUNT_CREATED_BY_EMAIL } = require("@/helpers/constant");
 const { forgetTokenVerification } = require("@/middlewares/jwt");
 const { passportJWT } = require("@/middlewares/passport");
+const googleAuth = require("@/controllers/auth/googleAuth");
 
 const router = express.Router();
 
@@ -194,16 +195,17 @@ router.put(
 // sign up with google
 router.get(
   "/google",
-  passport.authenticate("google", { scope: ["profile", "email"] })
+  passport.authenticate("google", {
+    scope: ["email", "profile"],
+  })
 );
 
-// sign up with google account callback
 router.get(
   "/google/callback",
   passport.authenticate("google", {
-    failureRedirect: process.env.FAILURE_REDIRECT_URL_PATH,
+    failureRedirect: process.env.GOOGLE_AUTH_FAILURE_URL,
   }),
-  authController.googleCallback
+  googleAuth
 );
 
 module.exports = router;

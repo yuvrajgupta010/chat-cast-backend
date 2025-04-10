@@ -1,6 +1,5 @@
 const JWT = require("jsonwebtoken");
-const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
-const JWT_FORGET_TOKEN_KEY = process.env.JWT_FORGET_TOKEN_KEY;
+const { JWT_SECRET_KEY, JWT_FORGET_TOKEN_KEY } = require("./constant");
 
 exports.jwtSignToken = (jwtPayloadData) => {
   return JWT.sign(jwtPayloadData, JWT_SECRET_KEY, {

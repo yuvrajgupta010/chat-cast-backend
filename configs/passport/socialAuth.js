@@ -2,7 +2,7 @@ const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const googleAuth = require("@/controllers/auth/googleAuth");
 const passport = require("passport");
 
-const strategy = (app) => {
+const googleAuthStrategy = (app) => {
   passport.use(
     new GoogleStrategy(
       {
@@ -45,7 +45,6 @@ const strategy = (app) => {
         // } catch (err) {
         //   done(err, false);
         // }
-        console.log(profile);
         return done(null, profile);
       }
     )
@@ -58,21 +57,6 @@ const strategy = (app) => {
   passport.deserializeUser((user, done) => {
     done(null, user);
   });
-
-  app.get(
-    "/auth/google",
-    passport.authenticate("google", {
-      scope: ["email", "profile"],
-    })
-  );
-
-  app.get(
-    "/auth/google/callback",
-    passport.authenticate("google", {
-      failureRedirect: process.env.GOOGLE_AUTH_FAILURE_URL,
-    }),
-    googleAuth
-  );
 };
 
-module.exports = strategy;
+module.exports = googleAuthStrategy;

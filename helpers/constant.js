@@ -44,4 +44,7 @@ module.exports = {
   COOKIE_SECRET: process.env.COOKIE_SECRET,
   // AWS S3
   STATIC_FILE_S3_ADDRESS: process.env.STATIC_FILE_S3_ADDRESS,
+  // JWT auth
+  JWT_SECRET_KEY: process.env.JWT_SECRET_KEY,
+  JWT_FORGET_TOKEN_KEY: process.env.JWT_FORGET_TOKEN_KEY,
 };

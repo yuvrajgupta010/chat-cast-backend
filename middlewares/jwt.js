@@ -2,10 +2,9 @@ const {
   COOKIE_FORGET_TOKEN,
   MAIN_APP_DOMAIN,
   SERVER_ENV,
+  JWT_FORGET_TOKEN_KEY,
 } = require("@/helpers/constant");
 const { jwtForgetTokenVerify } = require("@/helpers/jwt");
-
-const JWT_FORGET_TOKEN_KEY = process.env.JWT_FORGET_TOKEN_KEY;
 
 exports.forgetTokenVerification = async (req, res, next) => {
   const forgetToken = req.signedCookies[COOKIE_FORGET_TOKEN];

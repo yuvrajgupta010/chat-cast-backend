@@ -7,7 +7,8 @@ const passport = require("passport");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
 const { COOKIE_SECRET } = require("@/helpers/constant");
-// const strategy = require("./passport/socialAuth");
+const googleAuthStrategy = require("./passport/socialAuth");
+const jwtAuthStrategy = require("./passport/jwt");
 
 module.exports = function (app, origins) {
   app.use(
@@ -37,5 +38,6 @@ module.exports = function (app, origins) {
   app.use(bodyParser.json());
   app.use(helmet());
   app.use(passport.initialize());
-  // strategy(app);
+  jwtAuthStrategy(app);
+  googleAuthStrategy(app);
 };
