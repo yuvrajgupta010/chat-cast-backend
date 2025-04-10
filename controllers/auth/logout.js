@@ -1,4 +1,8 @@
-const { COOKIE_ACCESS_TOKEN, MAIN_APP_DOMAIN } = require("@/helpers/constant");
+const {
+  COOKIE_ACCESS_TOKEN,
+  MAIN_APP_DOMAIN,
+  SERVER_ENV,
+} = require("@/helpers/constant");
 
 exports.logout = (req, res, next) => {
   try {
@@ -7,7 +11,7 @@ exports.logout = (req, res, next) => {
     if (token) {
       res.clearCookie(COOKIE_ACCESS_TOKEN, {
         httpOnly: true,
-        domain: MAIN_APP_DOMAIN,
+        domain: SERVER_ENV !== "DEV" ? MAIN_APP_DOMAIN : "localhost",
         secure: SERVER_ENV !== "DEV",
         signed: true,
         path: "/",

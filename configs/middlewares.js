@@ -5,8 +5,9 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const passport = require("passport");
 const cookieParser = require("cookie-parser");
-
-const COOKIE_SECRET = process.env.COOKIE_SECRET;
+const session = require("express-session");
+const { COOKIE_SECRET } = require("@/helpers/constant");
+// const strategy = require("./passport/socialAuth");
 
 module.exports = function (app, origins) {
   app.use(
@@ -18,10 +19,23 @@ module.exports = function (app, origins) {
       credentials: true,
     })
   );
+  // app.use(
+  //   session({
+  //     secret: "secret",
+  //     resave: false,
+  //     saveUninitialized: true,
+  //     cookie: {
+  //       httpOnly: true,
+  //       secure: true, // set to true if using HTTPS
+  //       sameSite: "none", // important for cross-origin
+  //     },
+  //   })
+  // );
   app.use(express.static(path.join(__dirname, "public")));
   app.use(cookieParser(COOKIE_SECRET));
   app.use(bodyParser.urlencoded({ extended: false }));
   app.use(bodyParser.json());
   app.use(helmet());
   app.use(passport.initialize());
+  // strategy(app);
 };

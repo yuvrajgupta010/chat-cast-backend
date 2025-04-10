@@ -8,7 +8,7 @@ const errorMiddleware = require("@/middlewares/error");
 
 ///////////////////All initalization imports - start///////////////////////
 // Passport
-require("@/configs/passport/socialAuth");
+// require("@/configs/passport/socialAuth");
 require("@/configs/passport/jwt");
 require("@/configs/sendgrid");
 // Redis

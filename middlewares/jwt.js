@@ -1,9 +1,14 @@
+const {
+  COOKIE_FORGET_TOKEN,
+  MAIN_APP_DOMAIN,
+  SERVER_ENV,
+} = require("@/helpers/constant");
 const { jwtForgetTokenVerify } = require("@/helpers/jwt");
 
 const JWT_FORGET_TOKEN_KEY = process.env.JWT_FORGET_TOKEN_KEY;
 
 exports.forgetTokenVerification = async (req, res, next) => {
-  const forgetToken = req?.body?.forgetToken;
+  const forgetToken = req.signedCookies[COOKIE_FORGET_TOKEN];
   if (!forgetToken) {
     const error = new Error("Forget token is required");
     error.status = 422;
@@ -19,6 +24,14 @@ exports.forgetTokenVerification = async (req, res, next) => {
       "Unauthorized access! Your token is invalid or expired."
     );
     error.status = 401;
+    res.clearCookie(COOKIE_FORGET_TOKEN, {
+      httpOnly: true,
+      domain: SERVER_ENV !== "DEV" ? MAIN_APP_DOMAIN : "localhost",
+      secure: SERVER_ENV !== "DEV",
+      signed: true,
+      path: "/",
+      sameSite: "Strict",
+    });
     next(error);
     return;
   }
@@ -26,6 +39,14 @@ exports.forgetTokenVerification = async (req, res, next) => {
   if (!decodedPayload) {
     const error = new Error("Token not contain required information");
     error.status = 422;
+    res.clearCookie(COOKIE_FORGET_TOKEN, {
+      httpOnly: true,
+      domain: SERVER_ENV !== "DEV" ? MAIN_APP_DOMAIN : "localhost",
+      secure: SERVER_ENV !== "DEV",
+      signed: true,
+      path: "/",
+      sameSite: "Strict",
+    });
     next(error);
     return;
   } else if (

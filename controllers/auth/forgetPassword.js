@@ -5,6 +5,9 @@ const {
   FORGET_PASSWORD_TEMPLATE,
 
   SERVER_ENV,
+  COOKIE_ACCESS_TOKEN,
+  COOKIE_FORGET_TOKEN,
+  FORGET_TOKEN_EXPIRY_TIME,
 } = require("@/helpers/constant");
 const { generateSecureOTP } = require("@/helpers/otp");
 const { addEmailInQueue } = require("@/helpers/bullMQ");
@@ -66,10 +69,19 @@ exports.forgetPassword = async (req, res, next) => {
       tokenType: "forget-token",
     });
 
+    const expires = new Date(Date.now() + FORGET_TOKEN_EXPIRY_TIME); // Setting expiration to 1 day from now
+
+    res.cookie(COOKIE_FORGET_TOKEN, generatedForgetToken, {
+      path: "/",
+      domain: SERVER_ENV !== "DEV" ? MAIN_APP_DOMAIN : "localhost",
+      secure: SERVER_ENV !== "DEV",
+      expires,
+      httpOnly: true,
+      signed: true,
+      sameSite: "Strict",
+    });
+
     return res.status(201).json({
-      data: {
-        forgetToken: generatedForgetToken,
-      },
       message: "OTP send to your email successfully",
     });
   } catch (error) {

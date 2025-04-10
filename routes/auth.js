@@ -6,6 +6,7 @@ const User = require("@/models/user");
 const authController = require("@/controllers/auth");
 const { ACCOUNT_CREATED_BY_EMAIL } = require("@/helpers/constant");
 const { forgetTokenVerification } = require("@/middlewares/jwt");
+const { passportJWT } = require("@/middlewares/passport");
 
 const router = express.Router();
 
@@ -113,6 +114,8 @@ router.post(
   authController.login
 );
 
+router.get("/logout", passportJWT, authController.logout);
+
 router.post(
   "/forget-password",
   [
@@ -142,6 +145,8 @@ router.post(
   ],
   authController.forgetPassword
 );
+
+router.get("/auth-status", passportJWT, authController.verifyUser);
 
 router.put(
   "/forget-password",

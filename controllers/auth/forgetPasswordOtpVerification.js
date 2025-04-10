@@ -9,6 +9,9 @@ const {
   COOKIE_ACCESS_TOKEN,
   MAIN_APP_DOMAIN,
   SERVER_ENV,
+  COOKIE_FORGET_TOKEN,
+  ACCESS_TOKEN_EXPIRY_TIME,
+  FORGET_TOKEN_EXPIRY_TIME,
 } = require("@/helpers/constant");
 const { hashPassword } = require("@/helpers/bcrypt");
 const { generateSecureOTP } = require("@/helpers/otp");
@@ -70,12 +73,11 @@ exports.forgetPasswordOtpVerification = async (req, res, next) => {
       await session.commitTransaction();
 
       const token = jwtSignToken({ email, userId: user._id.toString() });
-      const ONE_DAY_IN_MS = 24 * 60 * 60 * 1000; // 1 day in milliseconds
-      const expires = new Date(Date.now() + ONE_DAY_IN_MS); // Setting expiration to 1 day from now
+      const expires = new Date(Date.now() + ACCESS_TOKEN_EXPIRY_TIME); // Setting expiration to 1 day from now
 
       res.cookie(COOKIE_ACCESS_TOKEN, token, {
         path: "/",
-        domain: MAIN_APP_DOMAIN,
+        domain: SERVER_ENV !== "DEV" ? MAIN_APP_DOMAIN : "localhost",
         secure: SERVER_ENV !== "DEV",
         expires,
         httpOnly: true,
@@ -136,10 +138,19 @@ exports.forgetPasswordOtpVerification = async (req, res, next) => {
         tokenType: "forget-token",
       });
 
+      const expires = new Date(Date.now() + FORGET_TOKEN_EXPIRY_TIME); // Setting expiration to 1 day from now
+
+      res.cookie(COOKIE_FORGET_TOKEN, generatedForgetToken, {
+        path: "/",
+        domain: SERVER_ENV !== "DEV" ? MAIN_APP_DOMAIN : "localhost",
+        secure: SERVER_ENV !== "DEV",
+        expires,
+        httpOnly: true,
+        signed: true,
+        sameSite: "Strict",
+      });
+
       return res.status(201).json({
-        data: {
-          forgetToken: generatedForgetToken,
-        },
         message: "OTP resend to your email successfully",
       });
     }

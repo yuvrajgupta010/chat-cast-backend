@@ -36,7 +36,7 @@ exports.signup = async (req, res, next) => {
         fullName,
       },
     });
-
+    console.log(user?.toClient?.(), "==================");
     const otpData = new Otp({
       otp: generatedOTP,
       userEmail: email,
@@ -79,13 +79,14 @@ exports.signup = async (req, res, next) => {
     }
 
     await session.commitTransaction();
-
+    console.log("I am running -----------------");
     return res.status(201).json({
       data: { user: user.toClient() },
       message:
         "Account created successfully and ready for verification. Please check your email for OTP",
     });
   } catch (err) {
+    console.log("I am aborting");
     await session.abortTransaction();
     next(err);
   } finally {

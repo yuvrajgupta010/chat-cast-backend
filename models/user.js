@@ -107,7 +107,7 @@ userSchema.methods.toClient = function () {
   delete obj.accountAuthType;
 
   // Remove authenticator object if it exists
-  delete obj.authenticator;
+  delete obj.authenticator.authenticationId;
 
   // Remove timestamp
   delete obj.createdAt;

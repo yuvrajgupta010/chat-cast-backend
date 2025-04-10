@@ -4,6 +4,8 @@ require("module-alias/register");
 const express = require("express");
 const http = require("http");
 const socketIo = require("socket.io");
+const signature = require("cookie-signature");
+const cookie = require("cookie");
 const { createShardedAdapter } = require("@socket.io/redis-adapter");
 const Redis = require("ioredis");
 
@@ -13,7 +15,12 @@ const date = require("./helpers/date");
 // config
 const { mongoDBConnection } = require("./configs/mongoDB");
 const { jwtVerifyToken } = require("./helpers/jwt");
-const { REDIS_HOST_ADDRESS, REDIS_HOST_PORT } = require("./helpers/constant");
+const {
+  REDIS_HOST_ADDRESS,
+  REDIS_HOST_PORT,
+  COOKIE_ACCESS_TOKEN,
+  COOKIE_SECRET,
+} = require("./helpers/constant");
 const middlewares = require("./configs/middlewares");
 
 // APIs
@@ -79,17 +86,21 @@ pubClient.on("error", (err) => {
 });
 
 io.use((socket, next) => {
-  let accessToken;
-  // if (process.env.SERVER_ENV === "DEV") {
-  //   accessToken = socket.handshake.query.accessToken;
-  // } else {
-  accessToken = socket.handshake.auth.accessToken;
-  // }
-  if (accessToken) {
-    jwtVerifyToken(accessToken, (err, jwtPayload) => {
-      if (err) {
-        return next(new Error("Authentication error"));
-      }
+  const rawCookieHeader = socket.handshake.headers.cookie;
+
+  if (!rawCookieHeader) return next(new Error("No cookies found"));
+
+  const cookies = cookie.parse(rawCookieHeader);
+  let signedAccessToken = cookies[COOKIE_ACCESS_TOKEN];
+
+  if (!signedAccessToken) return next(new Error("No access token in cookies"));
+
+  if (signedAccessToken.startsWith("s:")) {
+    signedAccessToken = signedAccessToken.slice(2); // remove "s:"
+    const unsignedToken = signature.unsign(signedAccessToken, COOKIE_SECRET);
+
+    jwtVerifyToken(unsignedToken, (err, jwtPayload) => {
+      if (err) return next(new Error("Authentication error"));
       socket.jwtPayload = jwtPayload;
       next();
     });

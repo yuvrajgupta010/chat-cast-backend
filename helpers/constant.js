@@ -38,6 +38,10 @@ module.exports = {
   EMAIL_SERVICE_QUEUE: "email-service-queue",
   // cookies name
   COOKIE_ACCESS_TOKEN: "accessToken",
+  ACCESS_TOKEN_EXPIRY_TIME: 24 * 60 * 60 * 1000, // 1 day in milliseconds
+  COOKIE_FORGET_TOKEN: "forgetToken",
+  FORGET_TOKEN_EXPIRY_TIME: 5 * 60 * 1000, // 1 day in milliseconds
+  COOKIE_SECRET: process.env.COOKIE_SECRET,
   // AWS S3
   STATIC_FILE_S3_ADDRESS: process.env.STATIC_FILE_S3_ADDRESS,
 };
