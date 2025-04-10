@@ -20,18 +20,18 @@ module.exports = function (app, origins) {
       credentials: true,
     })
   );
-  // app.use(
-  //   session({
-  //     secret: "secret",
-  //     resave: false,
-  //     saveUninitialized: true,
-  //     cookie: {
-  //       httpOnly: true,
-  //       secure: true, // set to true if using HTTPS
-  //       sameSite: "none", // important for cross-origin
-  //     },
-  //   })
-  // );
+  app.use(
+    session({
+      secret: "secret",
+      resave: false,
+      saveUninitialized: true,
+      cookie: {
+        httpOnly: true,
+        secure: true, // set to true if using HTTPS
+        sameSite: "none", // important for cross-origin
+      },
+    })
+  );
   app.use(express.static(path.join(__dirname, "public")));
   app.use(cookieParser(COOKIE_SECRET));
   app.use(bodyParser.urlencoded({ extended: false }));
