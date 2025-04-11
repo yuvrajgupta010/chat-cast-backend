@@ -29,7 +29,7 @@ const googleAuth = async (req, res, next) => {
       });
       await newUser.save();
 
-      const token = jwtSignToken({ email, userId: user.id });
+      const token = jwtSignToken({ email, userId: newUser._id.toString() });
       const expires = new Date(Date.now() + ACCESS_TOKEN_EXPIRY_TIME); // Setting expiration to 1 day from now
 
       res.cookie(COOKIE_ACCESS_TOKEN, token, {
