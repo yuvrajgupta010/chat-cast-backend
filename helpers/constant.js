@@ -31,6 +31,7 @@ module.exports = {
   /////////// view template - template types
   SIGN_UP_TEMPLATE: "signup",
   WELCOME_TEMPLATE: "welcome",
+  WELCOME_WITH_SOCIAL_TEMPLATE: "welcome-with-social",
   RESEND_OTP_TEMPLATE: "resend-otp",
   FORGET_PASSWORD_TEMPLATE: "forget-password",
   RESEND_FORGET_PASSWORD_TEMPLATE: "resend-forget-password",

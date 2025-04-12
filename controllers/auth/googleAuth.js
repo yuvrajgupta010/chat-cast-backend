@@ -5,6 +5,7 @@ const {
   ACCESS_TOKEN_EXPIRY_TIME,
   SERVER_ENV,
   MAIN_APP_DOMAIN,
+  WELCOME_WITH_SOCIAL_TEMPLATE,
 } = require("@/helpers/constant");
 const { jwtSignToken } = require("@/helpers/jwt");
 
@@ -31,6 +32,22 @@ const googleAuth = async (req, res, next) => {
 
       const token = jwtSignToken({ email, userId: newUser._id.toString() });
       const expires = new Date(Date.now() + ACCESS_TOKEN_EXPIRY_TIME); // Setting expiration to 1 day from now
+
+      if (SERVER_ENV !== "DEV") {
+        await addEmailInQueue(email, {
+          templateType: WELCOME_WITH_SOCIAL_TEMPLATE,
+          authenticatedBy: ACCOUNT_CREATED_BY_GOOGLE,
+          emailInfo: {
+            email,
+            fullName: profile.displayName,
+            year,
+          },
+        });
+      } else {
+        console.log(
+          `${profile.displayName} is signed up with ${ACCOUNT_CREATED_BY_GOOGLE}`
+        );
+      }
 
       res.cookie(COOKIE_ACCESS_TOKEN, token, {
         path: "/",
