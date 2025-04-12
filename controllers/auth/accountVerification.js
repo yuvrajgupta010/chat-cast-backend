@@ -68,9 +68,8 @@ exports.accountVerification = async (req, res, next) => {
       otpData.isVerified = true;
       await otpData.save({ session });
 
-      const year = new Date().getFullYear().toString();
-
       if (SERVER_ENV !== "DEV") {
+        const year = new Date().getFullYear().toString();
         await addEmailInQueue(email, {
           templateType: WELCOME_TEMPLATE,
           emailInfo: {

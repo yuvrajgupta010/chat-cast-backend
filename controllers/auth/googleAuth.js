@@ -8,6 +8,7 @@ const {
   WELCOME_WITH_SOCIAL_TEMPLATE,
 } = require("@/helpers/constant");
 const { jwtSignToken } = require("@/helpers/jwt");
+const { addEmailInQueue } = require("@/helpers/bullMQ");
 
 const googleAuth = async (req, res, next) => {
   const profile = req.user;
@@ -34,6 +35,8 @@ const googleAuth = async (req, res, next) => {
       const expires = new Date(Date.now() + ACCESS_TOKEN_EXPIRY_TIME); // Setting expiration to 1 day from now
 
       if (SERVER_ENV !== "DEV") {
+        const year = new Date().getFullYear().toString();
+
         await addEmailInQueue(email, {
           templateType: WELCOME_WITH_SOCIAL_TEMPLATE,
           authenticatedBy: ACCOUNT_CREATED_BY_GOOGLE,
