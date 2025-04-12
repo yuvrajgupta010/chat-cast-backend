@@ -4,6 +4,8 @@ const User = require("@/models/user");
 const { expressValidation } = require("@/helpers/validation");
 const { putS3ObjectURL, deleteS3Object } = require("@/helpers/awsS3");
 
+const AWS_S3_PUBLIC_BUCKET_URL = process.env.AWS_S3_PUBLIC_BUCKET_URL;
+
 exports.profilePicture = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
@@ -34,13 +36,13 @@ exports.profilePicture = async (req, res, next) => {
       await deleteS3Object(user?.profile?.profileImageURL, true);
     }
 
-    user.profile.profileImageURL = awsObjectPath;
+    user.profile.profileImageURL = `${AWS_S3_PUBLIC_BUCKET_URL}/${awsObjectPath}`;
     await user.save({ session });
     await session.commitTransaction();
 
     return res.status(200).json({
       data: {
-        profileImageURL: awsObjectPath,
+        profileImageURL: user?.profile?.profileImageURL,
         presignedURL: putUrlForObjectUpload,
       },
       message: "URL generated successfully",

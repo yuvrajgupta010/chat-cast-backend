@@ -28,7 +28,7 @@ exports.getChatList = async (req, res, next) => {
       .populate("lastMessage")
       .populate(
         "users",
-        "email profile.fullName profile.profileImageURL profile.about"
+        "email profile.fullName profile.profileImageURL profile.about accountAuthType"
       )
       .exec();
 
@@ -49,7 +49,7 @@ exports.getChatList = async (req, res, next) => {
       .populate("lastMessage")
       .populate(
         "users",
-        "email profile.fullName profile.profileImageURL profile.about"
+        "email profile.fullName profile.profileImageURL profile.about accountAuthType"
       )
       .exec();
 
