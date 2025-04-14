@@ -31,12 +31,15 @@ yarn install
 ## Setup
 Add .env file with own keys:
 ```bash
-SERVER_ENV=""
+SERVER_ENV="" DEV or PROD
 MAIN_APP_DOMAIN=""
 
 # JWT
 JWT_SECRET_KEY=""
 JWT_FORGET_TOKEN_KEY=""
+
+# Cookie
+COOKIE_SECRET=""
 
 # Sendgrid
 SENDGRID_SECRET_KEY=""
@@ -46,13 +49,14 @@ SENDGRID_VERIFIED_EMAIL=""
 BCRYPT_SECRET_KEY="a"
 
 # Google auth
-GOOGLE_CLIENT_ID=""
-GOOGLE_CLIENT_SECRET=""
-FAILURE_REDIRECT_URL_PATH="" # need to be chanage in production
+GOOGLE_AUTH_CALLBACK="http://localhost:8080/auth/google/callback"
+GOOGLE_AUTH_CLIENT_ID=""
+GOOGLE_AUTH_CLIENT_SECRET=""
+GOOGLE_AUTH_FAILURE_URL=""http://localhost:8080/auth/login"
+GOOGLE_AUTH_SUCCESS_URL=""http://localhost:8080/chat"
 
 # EJS template
 STATIC_FILE_S3_ADDRESS=""
-
 
 # MongoDB
 MONGO_DB_USERNAME=""
