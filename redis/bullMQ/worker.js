@@ -7,15 +7,16 @@ const {
   VIEW_FOLDER_PATH,
   SIGN_UP_TEMPLATE,
   WELCOME_TEMPLATE,
+  WELCOME_WITH_SOCIAL_TEMPLATE,
   RESEND_OTP_TEMPLATE,
   FORGET_PASSWORD_TEMPLATE,
   RESEND_FORGET_PASSWORD_TEMPLATE,
-} = require("../../helpers/constant");
-const { sendEmail } = require("../../helpers/sendgrid");
+  REDIS_HOST_ADDRESS,
+  REDIS_HOST_PORT,
+} = require("@/helpers/constant");
+const { sendEmail } = require("@/helpers/sendgrid");
 
 // Environment variables
-const REDIS_HOST_ADDRESS = process.env.REDIS_HOST_ADDRESS;
-const REDIS_HOST_PORT = process.env.REDIS_HOST_PORT;
 const STATIC_FILE_S3_ADDRESS = process.env.STATIC_FILE_S3_ADDRESS;
 const MAIN_APP_DOMAIN = process.env.MAIN_APP_DOMAIN;
 
@@ -24,6 +25,10 @@ const signupTemplatePath = path.join(VIEW_FOLDER_PATH, "signup.ejs");
 const welcomeTemplatePath = path.join(VIEW_FOLDER_PATH, "welcome.ejs");
 const resendOtpTemplate = path.join(VIEW_FOLDER_PATH, "resend-otp.ejs");
 const forgetOtpTemplate = path.join(VIEW_FOLDER_PATH, "forget-otp.ejs");
+const welcomeWithSocialTemplate = path.join(
+  VIEW_FOLDER_PATH,
+  "welcome-with-social.ejs"
+);
 
 const emailServiceWorker = new Worker(
   EMAIL_SERVICE_QUEUE,
@@ -31,8 +36,13 @@ const emailServiceWorker = new Worker(
     const jobData = job.data;
     // Email logic starting up
     try {
+      let receiverEmail = null;
+      let emailSubjectLine = null;
+      let emailText = null;
+      let generatedHTML = null;
+
       if (jobData.templateType === SIGN_UP_TEMPLATE) {
-        const generatedHTML = await ejs.renderFile(signupTemplatePath, {
+        generatedHTML = await ejs.renderFile(signupTemplatePath, {
           staticFileDomain: STATIC_FILE_S3_ADDRESS,
           mainAppDomain: MAIN_APP_DOMAIN,
           user: {
@@ -42,14 +52,11 @@ const emailServiceWorker = new Worker(
           year: jobData?.emailInfo?.year,
         });
 
-        return await sendEmail(
-          jobData?.emailInfo?.email,
-          "Sign up - Account Verification",
-          `Thank you for signing up. Please verify your account using OTP ${jobData?.emailInfo?.otp}.`,
-          generatedHTML
-        );
+        receiverEmail = jobData?.emailInfo?.email;
+        emailSubjectLine = "Sign up - Account Verification";
+        emailText = `Thank you for signing up. Please verify your account using OTP ${jobData?.emailInfo?.otp}.`;
       } else if (jobData.templateType === WELCOME_TEMPLATE) {
-        const generatedHTML = await ejs.renderFile(welcomeTemplatePath, {
+        generatedHTML = await ejs.renderFile(welcomeTemplatePath, {
           staticFileDomain: STATIC_FILE_S3_ADDRESS,
           mainAppDomain: MAIN_APP_DOMAIN,
           user: {
@@ -58,14 +65,25 @@ const emailServiceWorker = new Worker(
           year: jobData?.emailInfo?.year,
         });
 
-        return await sendEmail(
-          jobData?.emailInfo?.email,
-          `Welcome, ${jobData?.emailInfo?.fullName}`,
-          `Your account is verified successfully. We are happy to see you onboard!`,
-          generatedHTML
-        );
+        receiverEmail = jobData?.emailInfo?.email;
+        emailSubjectLine = `Welcome, ${jobData?.emailInfo?.fullName}`;
+        emailText = `Your account is verified successfully. We are happy to see you onboard!`;
+      } else if (jobData.templateType === WELCOME_WITH_SOCIAL_TEMPLATE) {
+        generatedHTML = await ejs.renderFile(welcomeWithSocialTemplate, {
+          staticFileDomain: STATIC_FILE_S3_ADDRESS,
+          mainAppDomain: MAIN_APP_DOMAIN,
+          authenticatedBy: jobData?.authenticatedBy,
+          user: {
+            fullName: jobData?.emailInfo?.fullName,
+          },
+          year: jobData?.emailInfo?.year,
+        });
+
+        receiverEmail = jobData?.emailInfo?.email;
+        emailSubjectLine = `Welcome, ${jobData?.emailInfo?.fullName}`;
+        emailText = `Your account created using ${jobData?.emailInfo?.authenticatedBy}. We are happy to see you onboard!`;
       } else if (jobData.templateType === RESEND_OTP_TEMPLATE) {
-        const generatedHTML = await ejs.renderFile(resendOtpTemplate, {
+        generatedHTML = await ejs.renderFile(resendOtpTemplate, {
           staticFileDomain: STATIC_FILE_S3_ADDRESS,
           mainAppDomain: MAIN_APP_DOMAIN,
           user: {
@@ -74,14 +92,11 @@ const emailServiceWorker = new Worker(
           year: jobData?.emailInfo?.year,
         });
 
-        return await sendEmail(
-          jobData?.emailInfo?.email,
-          `Resended OTP for verification`,
-          `${jobData?.emailInfo?.otp} is your new OTP for verification`,
-          generatedHTML
-        );
+        receiverEmail = jobData?.emailInfo?.email;
+        emailSubjectLine = `Resended OTP for verification`;
+        emailText = `${jobData?.emailInfo?.otp} is your new OTP for verification`;
       } else if (jobData.templateType === FORGET_PASSWORD_TEMPLATE) {
-        const generatedHTML = await ejs.renderFile(forgetOtpTemplate, {
+        generatedHTML = await ejs.renderFile(forgetOtpTemplate, {
           staticFileDomain: STATIC_FILE_S3_ADDRESS,
           mainAppDomain: MAIN_APP_DOMAIN,
           user: {
@@ -90,14 +105,11 @@ const emailServiceWorker = new Worker(
           year: jobData?.emailInfo?.year,
         });
 
-        return await sendEmail(
-          jobData?.emailInfo?.email,
-          `Forget OTP for account recovery`,
-          `${jobData?.emailInfo?.otp} is your forget OTP for account recovery`,
-          generatedHTML
-        );
+        receiverEmail = jobData?.emailInfo?.email;
+        emailSubjectLine = `Forget OTP for account recovery`;
+        emailText = `${jobData?.emailInfo?.otp} is your forget OTP for account recovery`;
       } else if (jobData.templateType === RESEND_FORGET_PASSWORD_TEMPLATE) {
-        const generatedHTML = await ejs.renderFile(forgetOtpTemplate, {
+        generatedHTML = await ejs.renderFile(forgetOtpTemplate, {
           staticFileDomain: STATIC_FILE_S3_ADDRESS,
           mainAppDomain: MAIN_APP_DOMAIN,
           user: {
@@ -106,13 +118,17 @@ const emailServiceWorker = new Worker(
           year: jobData?.emailInfo?.year,
         });
 
-        return await sendEmail(
-          jobData?.emailInfo?.email,
-          `Regenerated account recovery OTP`,
-          `${jobData?.emailInfo?.otp} is your regenerated forget OTP for account recovery`,
-          generatedHTML
-        );
+        receiverEmail = jobData?.emailInfo?.email;
+        emailSubjectLine = `Regenerated account recovery OTP`;
+        emailText = `${jobData?.emailInfo?.otp} is your forget OTP for account recovery`;
       }
+
+      return await sendEmail(
+        receiverEmail,
+        emailSubjectLine,
+        emailText,
+        generatedHTML
+      );
     } catch (error) {
       console.log(error, "error in Bull MQ worker");
     }

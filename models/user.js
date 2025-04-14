@@ -3,7 +3,7 @@ const {
   ACCOUNT_CREATED_BY_EMAIL,
   ACCOUNT_CREATED_BY_GOOGLE,
   ACCOUNT_CREATED_BY_FACEBOOK,
-} = require("../helpers/constant");
+} = require("@/helpers/constant");
 
 const Schema = mongoose.Schema;
 
@@ -102,9 +102,6 @@ userSchema.methods.toClient = function () {
 
   // Remove password if it exists
   delete obj.password;
-
-  // Remove accountAuthType
-  delete obj.accountAuthType;
 
   // Remove authenticator object if it exists
   delete obj.authenticator;

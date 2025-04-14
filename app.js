@@ -1,54 +1,46 @@
 // library
 require("dotenv").config();
+require("module-alias/register");
 const express = require("express");
 const http = require("http");
-const path = require("path");
-const helmet = require("helmet");
-const bodyParser = require("body-parser");
-const cors = require("cors");
-const passport = require("passport");
 const socketIo = require("socket.io");
+const signature = require("cookie-signature");
+const cookie = require("cookie");
 const { createShardedAdapter } = require("@socket.io/redis-adapter");
 const Redis = require("ioredis");
 
 // helper or util
 const date = require("./helpers/date");
 
-// middleware
-const errorMiddleware = require("./middlewares/error");
-
 // config
 const { mongoDBConnection } = require("./configs/mongoDB");
 const { jwtVerifyToken } = require("./helpers/jwt");
+const {
+  REDIS_HOST_ADDRESS,
+  REDIS_HOST_PORT,
+  COOKIE_ACCESS_TOKEN,
+  COOKIE_SECRET,
+} = require("./helpers/constant");
+const middlewares = require("./configs/middlewares");
+
+// APIs
+const apiRoutes = require("./routes/routes");
+
+// ENV import
+const PORT = process.env.PORT || 8080;
+const MAIN_APP_DOMAIN = process.env.MAIN_APP_DOMAIN;
 
 const app = express();
-const PORT = process.env.PORT || 8080;
 
 //allowed origins
 let origins;
 if (process.env.SERVER_ENV === "PROD") {
-  origins = [
-    "http://chat-cast.personal.yuvrajgupta.in",
-    "https://chat-cast.personal.yuvrajgupta.in",
-  ];
+  origins = [`http://${MAIN_APP_DOMAIN}`, `https://${MAIN_APP_DOMAIN}`];
 } else {
   origins = ["http://localhost:5173", "http://localhost:3000"];
 }
 
-app.use(
-  cors({
-    origin: origins,
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
-    preflightContinue: false,
-    optionsSuccessStatus: 204,
-    credentials: true,
-  })
-);
-app.use(express.static(path.join(__dirname, "public")));
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-app.use(helmet());
-app.use(passport.initialize());
+middlewares(app, origins);
 
 // server health check
 app.get("/health-check", (req, res) => {
@@ -60,18 +52,13 @@ app.get("/health-check", (req, res) => {
   res.json(healthCheck);
 });
 
-require("./routes/routes")(app);
-app.use(errorMiddleware);
+apiRoutes(app);
 
 const httpServer = http.createServer(app);
 
 const io = socketIo(httpServer, {
   cors: {
-    origin: [
-      "http://localhost:3000",
-      "http://chat-cast.personal.yuvrajgupta.in",
-      "https://chat-cast.personal.yuvrajgupta.in",
-    ],
+    origin: origins,
     methods: ["GET", "POST"],
     credentials: true,
   },
@@ -84,7 +71,11 @@ const io = socketIo(httpServer, {
 });
 
 // Create Redis clients for pub and sub using ioredis
-const pubClient = new Redis();
+const pubClient = new Redis({
+  port: REDIS_HOST_PORT, // Redis port
+  host: REDIS_HOST_ADDRESS, // Redis host
+  username: "default", // needs Redis >= 6
+});
 const subClient = pubClient.duplicate();
 
 // Use the Redis adapter
@@ -95,17 +86,21 @@ pubClient.on("error", (err) => {
 });
 
 io.use((socket, next) => {
-  let accessToken;
-  // if (process.env.SERVER_ENV === "DEV") {
-  //   accessToken = socket.handshake.query.accessToken;
-  // } else {
-  accessToken = socket.handshake.auth.accessToken;
-  // }
-  if (accessToken) {
-    jwtVerifyToken(accessToken, (err, jwtPayload) => {
-      if (err) {
-        return next(new Error("Authentication error"));
-      }
+  const rawCookieHeader = socket.handshake.headers.cookie;
+
+  if (!rawCookieHeader) return next(new Error("No cookies found"));
+
+  const cookies = cookie.parse(rawCookieHeader);
+  let signedAccessToken = cookies[COOKIE_ACCESS_TOKEN];
+
+  if (!signedAccessToken) return next(new Error("No access token in cookies"));
+
+  if (signedAccessToken.startsWith("s:")) {
+    signedAccessToken = signedAccessToken.slice(2); // remove "s:"
+    const unsignedToken = signature.unsign(signedAccessToken, COOKIE_SECRET);
+
+    jwtVerifyToken(unsignedToken, (err, jwtPayload) => {
+      if (err) return next(new Error("Authentication error"));
       socket.jwtPayload = jwtPayload;
       next();
     });

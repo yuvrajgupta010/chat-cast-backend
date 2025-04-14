@@ -1,4 +1,9 @@
 const passport = require("passport");
+const {
+  COOKIE_ACCESS_TOKEN,
+  MAIN_APP_DOMAIN,
+  SERVER_ENV,
+} = require("@/helpers/constant");
 
 exports.passportJWT = (req, res, next) => {
   passport.authenticate("jwt", { session: false }, (err, user, info) => {
@@ -7,17 +12,26 @@ exports.passportJWT = (req, res, next) => {
     }
     if (!user) {
       // Customize the message based on the error info
+      let message = null;
+
       if (info && info.name === "TokenExpiredError") {
-        return res
-          .status(401)
-          .json({ message: "Your token has expired. Please log in again." });
+        message = "Your token has expired. Please log in again.";
       } else if (info && info.name === "JsonWebTokenError") {
-        return res
-          .status(401)
-          .json({ message: "Invalid token. Please log in again." });
+        message = "Invalid token. Please log in again.";
       } else {
-        return res.status(401).json({ message: "Unauthorized" });
+        message = "Unauthorized";
       }
+
+      res.clearCookie(COOKIE_ACCESS_TOKEN, {
+        httpOnly: true,
+        domain: SERVER_ENV !== "DEV" ? MAIN_APP_DOMAIN : "localhost",
+        secure: SERVER_ENV !== "DEV",
+        signed: true,
+        path: "/",
+        sameSite: "Strict",
+      });
+
+      return res.status(401).json({ message });
     }
     req.jwtPayload = user;
     next();

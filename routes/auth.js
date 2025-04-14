@@ -2,10 +2,12 @@ const express = require("express");
 const passport = require("passport");
 const { body, query } = require("express-validator");
 
-const User = require("../models/user");
-const authController = require("../controllers/auth");
-const { ACCOUNT_CREATED_BY_EMAIL } = require("../helpers/constant");
-const { forgetTokenVerification } = require("../middlewares/jwt");
+const User = require("@/models/user");
+const authController = require("@/controllers/auth");
+const { ACCOUNT_CREATED_BY_EMAIL } = require("@/helpers/constant");
+const { forgetTokenVerification } = require("@/middlewares/jwt");
+const { passportJWT } = require("@/middlewares/passport");
+const googleAuth = require("@/controllers/auth/googleAuth");
 
 const router = express.Router();
 
@@ -113,6 +115,8 @@ router.post(
   authController.login
 );
 
+router.get("/logout", passportJWT, authController.logout);
+
 router.post(
   "/forget-password",
   [
@@ -142,6 +146,8 @@ router.post(
   ],
   authController.forgetPassword
 );
+
+router.get("/auth-status", passportJWT, authController.verifyUser);
 
 router.put(
   "/forget-password",
@@ -189,16 +195,17 @@ router.put(
 // sign up with google
 router.get(
   "/google",
-  passport.authenticate("google", { scope: ["profile", "email"] })
+  passport.authenticate("google", {
+    scope: ["email", "profile"],
+  })
 );
 
-// sign up with google account callback
 router.get(
   "/google/callback",
   passport.authenticate("google", {
-    failureRedirect: process.env.FAILURE_REDIRECT_URL_PATH,
+    failureRedirect: process.env.GOOGLE_AUTH_FAILURE_URL,
   }),
-  authController.googleCallback
+  googleAuth
 );
 
 module.exports = router;

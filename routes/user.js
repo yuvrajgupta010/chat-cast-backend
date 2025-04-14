@@ -1,9 +1,9 @@
 const express = require("express");
 const { body, query } = require("express-validator");
 
-const User = require("../models/user");
-const userController = require("../controllers/user");
-const { passportJWT } = require("../middlewares/passport");
+const User = require("@/models/user");
+const userController = require("@/controllers/user");
+const { passportJWT } = require("@/middlewares/passport");
 
 const router = express.Router();
 

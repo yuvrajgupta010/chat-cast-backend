@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { RESET_PASSWORD_OTP, VERIFICATION_OTP } = require("../helpers/constant");
+const { RESET_PASSWORD_OTP, VERIFICATION_OTP } = require("@/helpers/constant");
 
 const Schema = mongoose.Schema;
 
