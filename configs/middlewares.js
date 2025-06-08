@@ -22,7 +22,7 @@ module.exports = function (app, origins) {
   );
   app.use(
     session({
-      secret: "secret",
+      secret: process.env.SESSION_SECRET,
       resave: false,
       saveUninitialized: true,
       cookie: {
