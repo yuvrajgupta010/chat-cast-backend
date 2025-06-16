@@ -3,6 +3,7 @@ const {
   COOKIE_ACCESS_TOKEN,
   MAIN_APP_DOMAIN,
   SERVER_ENV,
+  COOKIE_DOMAIN,
 } = require("@/helpers/constant");
 
 exports.passportJWT = (req, res, next) => {
@@ -24,7 +25,7 @@ exports.passportJWT = (req, res, next) => {
 
       res.clearCookie(COOKIE_ACCESS_TOKEN, {
         httpOnly: true,
-        domain: SERVER_ENV !== "DEV" ? MAIN_APP_DOMAIN : "localhost",
+        domain: SERVER_ENV !== "DEV" ? COOKIE_DOMAIN : "localhost",
         secure: SERVER_ENV !== "DEV",
         signed: true,
         path: "/",

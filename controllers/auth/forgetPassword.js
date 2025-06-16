@@ -8,6 +8,7 @@ const {
   COOKIE_ACCESS_TOKEN,
   COOKIE_FORGET_TOKEN,
   FORGET_TOKEN_EXPIRY_TIME,
+  COOKIE_DOMAIN,
 } = require("@/helpers/constant");
 const { generateSecureOTP } = require("@/helpers/otp");
 const { addEmailInQueue } = require("@/helpers/bullMQ");
@@ -73,7 +74,7 @@ exports.forgetPassword = async (req, res, next) => {
 
     res.cookie(COOKIE_FORGET_TOKEN, generatedForgetToken, {
       path: "/",
-      domain: SERVER_ENV !== "DEV" ? MAIN_APP_DOMAIN : "localhost",
+      domain: SERVER_ENV !== "DEV" ? COOKIE_DOMAIN : "localhost",
       secure: SERVER_ENV !== "DEV",
       expires,
       httpOnly: true,

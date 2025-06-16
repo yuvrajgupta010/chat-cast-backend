@@ -3,6 +3,7 @@ const {
   MAIN_APP_DOMAIN,
   SERVER_ENV,
   JWT_FORGET_TOKEN_KEY,
+  COOKIE_DOMAIN,
 } = require("@/helpers/constant");
 const { jwtForgetTokenVerify } = require("@/helpers/jwt");
 
@@ -25,7 +26,7 @@ exports.forgetTokenVerification = async (req, res, next) => {
     error.status = 401;
     res.clearCookie(COOKIE_FORGET_TOKEN, {
       httpOnly: true,
-      domain: SERVER_ENV !== "DEV" ? MAIN_APP_DOMAIN : "localhost",
+      domain: SERVER_ENV !== "DEV" ? COOKIE_DOMAIN : "localhost",
       secure: SERVER_ENV !== "DEV",
       signed: true,
       path: "/",
@@ -40,7 +41,7 @@ exports.forgetTokenVerification = async (req, res, next) => {
     error.status = 422;
     res.clearCookie(COOKIE_FORGET_TOKEN, {
       httpOnly: true,
-      domain: SERVER_ENV !== "DEV" ? MAIN_APP_DOMAIN : "localhost",
+      domain: SERVER_ENV !== "DEV" ? COOKIE_DOMAIN : "localhost",
       secure: SERVER_ENV !== "DEV",
       signed: true,
       path: "/",

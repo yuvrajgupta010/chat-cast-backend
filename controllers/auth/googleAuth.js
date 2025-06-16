@@ -6,6 +6,7 @@ const {
   SERVER_ENV,
   MAIN_APP_DOMAIN,
   WELCOME_WITH_SOCIAL_TEMPLATE,
+  COOKIE_DOMAIN,
 } = require("@/helpers/constant");
 const { jwtSignToken } = require("@/helpers/jwt");
 const { addEmailInQueue } = require("@/helpers/bullMQ");
@@ -54,7 +55,7 @@ const googleAuth = async (req, res, next) => {
 
       res.cookie(COOKIE_ACCESS_TOKEN, token, {
         path: "/",
-        domain: SERVER_ENV !== "DEV" ? MAIN_APP_DOMAIN : "localhost",
+        domain: SERVER_ENV !== "DEV" ? COOKIE_DOMAIN : "localhost",
         secure: SERVER_ENV !== "DEV",
         expires,
         httpOnly: true,
@@ -70,7 +71,7 @@ const googleAuth = async (req, res, next) => {
 
         res.cookie(COOKIE_ACCESS_TOKEN, token, {
           path: "/",
-          domain: SERVER_ENV !== "DEV" ? MAIN_APP_DOMAIN : "localhost",
+          domain: SERVER_ENV !== "DEV" ? COOKIE_DOMAIN : "localhost",
           secure: SERVER_ENV !== "DEV",
           expires,
           httpOnly: true,

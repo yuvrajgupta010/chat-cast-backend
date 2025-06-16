@@ -11,6 +11,7 @@ const {
   MAIN_APP_DOMAIN,
   SERVER_ENV,
   ACCESS_TOKEN_EXPIRY_TIME,
+  COOKIE_DOMAIN,
 } = require("@/helpers/constant");
 const { generateSecureOTP } = require("@/helpers/otp");
 const { addEmailInQueue } = require("@/helpers/bullMQ");
@@ -89,7 +90,7 @@ exports.accountVerification = async (req, res, next) => {
 
       res.cookie(COOKIE_ACCESS_TOKEN, token, {
         path: "/",
-        domain: SERVER_ENV !== "DEV" ? MAIN_APP_DOMAIN : "localhost",
+        domain: SERVER_ENV !== "DEV" ? COOKIE_DOMAIN : "localhost",
         secure: SERVER_ENV !== "DEV",
         expires,
         httpOnly: true,

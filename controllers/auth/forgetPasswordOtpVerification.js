@@ -12,6 +12,7 @@ const {
   COOKIE_FORGET_TOKEN,
   ACCESS_TOKEN_EXPIRY_TIME,
   FORGET_TOKEN_EXPIRY_TIME,
+  COOKIE_DOMAIN,
 } = require("@/helpers/constant");
 const { hashPassword } = require("@/helpers/bcrypt");
 const { generateSecureOTP } = require("@/helpers/otp");
@@ -77,7 +78,7 @@ exports.forgetPasswordOtpVerification = async (req, res, next) => {
 
       res.cookie(COOKIE_ACCESS_TOKEN, token, {
         path: "/",
-        domain: SERVER_ENV !== "DEV" ? MAIN_APP_DOMAIN : "localhost",
+        domain: SERVER_ENV !== "DEV" ? COOKIE_DOMAIN : "localhost",
         secure: SERVER_ENV !== "DEV",
         expires,
         httpOnly: true,
@@ -142,7 +143,7 @@ exports.forgetPasswordOtpVerification = async (req, res, next) => {
 
       res.cookie(COOKIE_FORGET_TOKEN, generatedForgetToken, {
         path: "/",
-        domain: SERVER_ENV !== "DEV" ? MAIN_APP_DOMAIN : "localhost",
+        domain: SERVER_ENV !== "DEV" ? COOKIE_DOMAIN : "localhost",
         secure: SERVER_ENV !== "DEV",
         expires,
         httpOnly: true,

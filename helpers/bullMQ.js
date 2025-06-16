@@ -8,7 +8,7 @@ const emailServiceQueue = require("@/redis/bullMQ/producer");
  */
 const addEmailInQueue = async (name, dataObj) => {
   const response = await emailServiceQueue.add(name, dataObj, {
-    removeOnComplete: true,
+    removeOnComplete: true, // Note: this object is needed for production environment and this is optional
     removeOnFail: true,
   });
   return response;
