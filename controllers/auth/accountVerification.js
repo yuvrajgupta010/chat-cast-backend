@@ -8,10 +8,7 @@ const {
   WELCOME_TEMPLATE,
   RESEND_OTP_TEMPLATE,
   COOKIE_ACCESS_TOKEN,
-  MAIN_APP_DOMAIN,
   SERVER_ENV,
-  ACCESS_TOKEN_EXPIRY_TIME,
-  COOKIE_DOMAIN,
 } = require("@/helpers/constant");
 const { generateSecureOTP } = require("@/helpers/otp");
 const { addEmailInQueue } = require("@/helpers/bullMQ");

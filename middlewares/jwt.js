@@ -1,9 +1,6 @@
 const {
   COOKIE_FORGET_TOKEN,
-  MAIN_APP_DOMAIN,
-  SERVER_ENV,
   JWT_FORGET_TOKEN_KEY,
-  COOKIE_DOMAIN,
 } = require("@/helpers/constant");
 const { authCookieConfig } = require("@/helpers/cookieConfig");
 const { jwtForgetTokenVerify } = require("@/helpers/jwt");

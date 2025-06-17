@@ -1,5 +1,5 @@
 > [!NOTE]
-> I am trying dockerize this project. But facing problem with networking as it also require redis contanier to run. So, please any help is appreciated. Apart from this everything is working good, Enjoy!
+> I am trying to dockerize this project. But facing problem with networking as it also require redis contanier to run. So, please any help is appreciated. Apart from this everything is working good, Enjoy!
 
 > [!WARNING]
 > This backend require Redis to be up-and-running
@@ -23,6 +23,7 @@ The backend of Chat Cast is designed to facilitate seamless real-time communicat
 - **Security**: Helmet is used to secure HTTP headers.
 - **Validation**: Express-validator ensures robust request validation.
 - **Session Management**: Express-session with Redis for session management.
+- **Scalability**: Uses the Socket.IO Redis adapter, which makes it ideal for running in cluster mode.
 - **Template Engine**: EJS is used for server-side rendering.
 - **Development Tools**: Nodemon for automatic server restarts during development.
 
@@ -42,6 +43,7 @@ Add .env file with own keys:
 
 ```bash
 SERVER_ENV="" #DEV or PROD
+PORT=
 MAIN_APP_DOMAIN="" # Your frontend address like - chat-cast.frontend.com
 
 # JWT
@@ -50,20 +52,17 @@ JWT_FORGET_TOKEN_KEY=""
 
 # Cookie
 COOKIE_SECRET=""
+COOKIE_DOMAIN=""
+
+# Session
+SESSION_SECRET=""
 
 # Sendgrid
 SENDGRID_SECRET_KEY=""
 SENDGRID_VERIFIED_EMAIL=""
 
 # Bcrypt
-BCRYPT_SECRET_KEY="a"
-
-# Google auth
-GOOGLE_AUTH_CALLBACK="http://localhost:8080/auth/google/callback"
-GOOGLE_AUTH_CLIENT_ID=""
-GOOGLE_AUTH_CLIENT_SECRET=""
-GOOGLE_AUTH_FAILURE_URL="http://localhost:8080/auth/login"
-GOOGLE_AUTH_SUCCESS_URL="http://localhost:8080/chat"
+BCRYPT_SECRET_KEY=""
 
 # EJS template
 STATIC_FILE_S3_ADDRESS=""
@@ -82,6 +81,14 @@ AWS_REGION=""
 AWS_S3_BUCKET_NAME=""
 AWS_S3_ACCESS_KEY_ID=""
 AWS_S3_SECRET_ACCESS_KEY=""
+AWS_S3_PUBLIC_BUCKET_URL=""
+
+# Google auth
+GOOGLE_AUTH_CALLBACK="http://localhost:8080/auth/google/callback"
+GOOGLE_AUTH_CLIENT_ID=""
+GOOGLE_AUTH_CLIENT_SECRET=""
+GOOGLE_AUTH_FAILURE_URL="http://localhost:8080/auth/login"
+GOOGLE_AUTH_SUCCESS_URL="http://localhost:8080/chat"
 ```
 
 ## Usage

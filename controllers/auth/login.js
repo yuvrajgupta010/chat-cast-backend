@@ -1,11 +1,5 @@
 const { jwtSignToken } = require("@/helpers/jwt");
-const {
-  COOKIE_ACCESS_TOKEN,
-  MAIN_APP_DOMAIN,
-  SERVER_ENV,
-  ACCESS_TOKEN_EXPIRY_TIME,
-  COOKIE_DOMAIN,
-} = require("@/helpers/constant");
+const { COOKIE_ACCESS_TOKEN } = require("@/helpers/constant");
 const { comparePassword } = require("@/helpers/bcrypt");
 const { expressValidation } = require("@/helpers/validation");
 const { authCookieConfig } = require("@/helpers/cookieConfig");

@@ -3,12 +3,9 @@ const { jwtForgetToken } = require("@/helpers/jwt");
 const {
   RESET_PASSWORD_OTP,
   FORGET_PASSWORD_TEMPLATE,
-  MAIN_APP_DOMAIN,
   SERVER_ENV,
-  COOKIE_ACCESS_TOKEN,
   COOKIE_FORGET_TOKEN,
   FORGET_TOKEN_EXPIRY_TIME,
-  COOKIE_DOMAIN,
 } = require("@/helpers/constant");
 const { generateSecureOTP } = require("@/helpers/otp");
 const { addEmailInQueue } = require("@/helpers/bullMQ");
