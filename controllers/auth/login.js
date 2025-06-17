@@ -8,6 +8,7 @@ const {
 } = require("@/helpers/constant");
 const { comparePassword } = require("@/helpers/bcrypt");
 const { expressValidation } = require("@/helpers/validation");
+const { authCookieConfig } = require("@/helpers/cookieConfig");
 
 // login
 exports.login = async (req, res, next) => {
@@ -33,17 +34,8 @@ exports.login = async (req, res, next) => {
     }
 
     const token = jwtSignToken({ email, userId: req.user.id });
-    const expires = new Date(Date.now() + ACCESS_TOKEN_EXPIRY_TIME); // Setting expiration to 1 day from now
 
-    res.cookie(COOKIE_ACCESS_TOKEN, token, {
-      path: "/",
-      domain: SERVER_ENV !== "DEV" ? COOKIE_DOMAIN : "localhost",
-      secure: SERVER_ENV !== "DEV",
-      expires,
-      httpOnly: true,
-      signed: true,
-      sameSite: "Strict",
-    });
+    res.cookie(COOKIE_ACCESS_TOKEN, token, authCookieConfig({}));
 
     return res.status(200).json({
       data: {

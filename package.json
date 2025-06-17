@@ -2,9 +2,9 @@
   "name": "chat-cast-backend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
-    "start": "pm2 start app.js",
+    "start": "pm2 start app.js -i max",
     "dev": "nodemon app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

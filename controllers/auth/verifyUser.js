@@ -1,3 +1,5 @@
+const { COOKIE_ACCESS_TOKEN, SERVER_ENV } = require("@/helpers/constant");
+const { authCookieConfig } = require("@/helpers/cookieConfig");
 const User = require("@/models/user");
 
 exports.verifyUser = async (req, res, next) => {
@@ -11,6 +13,10 @@ exports.verifyUser = async (req, res, next) => {
     if (!user) {
       const error = new Error("Unauthorized!");
       error.status = 401;
+      res.clearCookie(
+        COOKIE_ACCESS_TOKEN,
+        authCookieConfig({ clearCookie: true })
+      );
       throw error;
     }
 

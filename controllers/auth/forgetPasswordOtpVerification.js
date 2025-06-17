@@ -19,6 +19,7 @@ const { generateSecureOTP } = require("@/helpers/otp");
 const { addEmailInQueue } = require("@/helpers/bullMQ");
 const { date5MinutesAgoFn } = require("@/helpers/date");
 const { expressValidation } = require("@/helpers/validation");
+const { authCookieConfig } = require("@/helpers/cookieConfig");
 
 exports.forgetPasswordOtpVerification = async (req, res, next) => {
   const session = await mongoose.startSession();
@@ -74,17 +75,8 @@ exports.forgetPasswordOtpVerification = async (req, res, next) => {
       await session.commitTransaction();
 
       const token = jwtSignToken({ email, userId: user._id.toString() });
-      const expires = new Date(Date.now() + ACCESS_TOKEN_EXPIRY_TIME); // Setting expiration to 1 day from now
 
-      res.cookie(COOKIE_ACCESS_TOKEN, token, {
-        path: "/",
-        domain: SERVER_ENV !== "DEV" ? COOKIE_DOMAIN : "localhost",
-        secure: SERVER_ENV !== "DEV",
-        expires,
-        httpOnly: true,
-        signed: true,
-        sameSite: "Strict",
-      });
+      res.cookie(COOKIE_ACCESS_TOKEN, token, authCookieConfig({}));
 
       return res.status(200).json({
         data: { user: user.toClient() },
@@ -139,17 +131,11 @@ exports.forgetPasswordOtpVerification = async (req, res, next) => {
         tokenType: "forget-token",
       });
 
-      const expires = new Date(Date.now() + FORGET_TOKEN_EXPIRY_TIME); // Setting expiration to 1 day from now
-
-      res.cookie(COOKIE_FORGET_TOKEN, generatedForgetToken, {
-        path: "/",
-        domain: SERVER_ENV !== "DEV" ? COOKIE_DOMAIN : "localhost",
-        secure: SERVER_ENV !== "DEV",
-        expires,
-        httpOnly: true,
-        signed: true,
-        sameSite: "Strict",
-      });
+      res.cookie(
+        COOKIE_FORGET_TOKEN,
+        generatedForgetToken,
+        authCookieConfig({})
+      );
 
       return res.status(201).json({
         message: "OTP resend to your email successfully",

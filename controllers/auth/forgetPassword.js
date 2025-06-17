@@ -14,6 +14,7 @@ const { generateSecureOTP } = require("@/helpers/otp");
 const { addEmailInQueue } = require("@/helpers/bullMQ");
 const { date5MinutesAgoFn } = require("@/helpers/date");
 const { expressValidation } = require("@/helpers/validation");
+const { authCookieConfig } = require("@/helpers/cookieConfig");
 
 exports.forgetPassword = async (req, res, next) => {
   try {
@@ -70,17 +71,13 @@ exports.forgetPassword = async (req, res, next) => {
       tokenType: "forget-token",
     });
 
-    const expires = new Date(Date.now() + FORGET_TOKEN_EXPIRY_TIME); // Setting expiration to 1 day from now
+    const expires = new Date(Date.now() + FORGET_TOKEN_EXPIRY_TIME); // setting 5 min from now
 
-    res.cookie(COOKIE_FORGET_TOKEN, generatedForgetToken, {
-      path: "/",
-      domain: SERVER_ENV !== "DEV" ? COOKIE_DOMAIN : "localhost",
-      secure: SERVER_ENV !== "DEV",
-      expires,
-      httpOnly: true,
-      signed: true,
-      sameSite: "Strict",
-    });
+    res.cookie(
+      COOKIE_FORGET_TOKEN,
+      generatedForgetToken,
+      authCookieConfig({ cookieExpiry: expires })
+    );
 
     return res.status(201).json({
       message: "OTP send to your email successfully",
