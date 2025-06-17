@@ -2,11 +2,8 @@ const User = require("@/models/user");
 const {
   ACCOUNT_CREATED_BY_GOOGLE,
   COOKIE_ACCESS_TOKEN,
-  ACCESS_TOKEN_EXPIRY_TIME,
   SERVER_ENV,
-  MAIN_APP_DOMAIN,
   WELCOME_WITH_SOCIAL_TEMPLATE,
-  COOKIE_DOMAIN,
 } = require("@/helpers/constant");
 const { jwtSignToken } = require("@/helpers/jwt");
 const { addEmailInQueue } = require("@/helpers/bullMQ");

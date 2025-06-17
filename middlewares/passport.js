@@ -1,10 +1,5 @@
 const passport = require("passport");
-const {
-  COOKIE_ACCESS_TOKEN,
-  MAIN_APP_DOMAIN,
-  SERVER_ENV,
-  COOKIE_DOMAIN,
-} = require("@/helpers/constant");
+const { COOKIE_ACCESS_TOKEN } = require("@/helpers/constant");
 const { authCookieConfig } = require("@/helpers/cookieConfig");
 
 exports.passportJWT = (req, res, next) => {

@@ -7,12 +7,8 @@ const {
   RESET_PASSWORD_OTP,
   RESEND_FORGET_PASSWORD_TEMPLATE,
   COOKIE_ACCESS_TOKEN,
-  MAIN_APP_DOMAIN,
   SERVER_ENV,
   COOKIE_FORGET_TOKEN,
-  ACCESS_TOKEN_EXPIRY_TIME,
-  FORGET_TOKEN_EXPIRY_TIME,
-  COOKIE_DOMAIN,
 } = require("@/helpers/constant");
 const { hashPassword } = require("@/helpers/bcrypt");
 const { generateSecureOTP } = require("@/helpers/otp");
