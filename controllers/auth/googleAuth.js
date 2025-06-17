@@ -60,7 +60,7 @@ const googleAuth = async (req, res, next) => {
         expires,
         httpOnly: true,
         signed: true,
-        sameSite: "Strict",
+        sameSite: "None",
       });
 
       return res.redirect(process.env.GOOGLE_AUTH_SUCCESS_URL);
@@ -76,7 +76,7 @@ const googleAuth = async (req, res, next) => {
           expires,
           httpOnly: true,
           signed: true,
-          sameSite: "Strict",
+          sameSite: "None",
         });
 
         return res.redirect(process.env.GOOGLE_AUTH_SUCCESS_URL);

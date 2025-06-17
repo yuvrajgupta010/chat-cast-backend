@@ -5,10 +5,18 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const passport = require("passport");
 const cookieParser = require("cookie-parser");
-const session = require("express-session");
-const { COOKIE_SECRET } = require("@/helpers/constant");
+const { COOKIE_SECRET, SERVER_ENV } = require("@/helpers/constant");
 const googleAuthStrategy = require("./passport/socialAuth");
 const jwtAuthStrategy = require("./passport/jwt");
+const session = require("express-session");
+const redisClient = require("./redis");
+const RedisStore = require("connect-redis").default;
+
+// Initialize store.
+let redisStore = new RedisStore({
+  client: redisClient,
+  prefix: "chat-cast:",
+});
 
 module.exports = function (app, origins) {
   app.use(
@@ -22,13 +30,14 @@ module.exports = function (app, origins) {
   );
   app.use(
     session({
+      store: redisStore,
       secret: process.env.SESSION_SECRET,
       resave: false,
-      saveUninitialized: true,
+      saveUninitialized: false,
       cookie: {
         httpOnly: true,
-        secure: true, // set to true if using HTTPS
-        sameSite: "none", // important for cross-origin
+        secure: SERVER_ENV === "PROD" ? true : false, // set to true if using HTTPS
+        sameSite: "None", // important for cross-origin
       },
     })
   );

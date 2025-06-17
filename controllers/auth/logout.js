@@ -16,7 +16,7 @@ exports.logout = (req, res, next) => {
         secure: SERVER_ENV !== "DEV",
         signed: true,
         path: "/",
-        sameSite: "Strict",
+        sameSite: "None",
       });
     }
     return res.status(200).json({

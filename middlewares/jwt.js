@@ -30,7 +30,7 @@ exports.forgetTokenVerification = async (req, res, next) => {
       secure: SERVER_ENV !== "DEV",
       signed: true,
       path: "/",
-      sameSite: "Strict",
+      sameSite: "None",
     });
     next(error);
     return;
@@ -45,7 +45,7 @@ exports.forgetTokenVerification = async (req, res, next) => {
       secure: SERVER_ENV !== "DEV",
       signed: true,
       path: "/",
-      sameSite: "Strict",
+      sameSite: "None",
     });
     next(error);
     return;

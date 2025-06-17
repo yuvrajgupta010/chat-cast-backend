@@ -2,7 +2,6 @@ const Redis = require("ioredis");
 
 // Create a Redis client
 const redisClient = new Redis();
-
 // Error handling
 redisClient.on("error", (err) => {
   console.error("Redis error:", err);

@@ -7,7 +7,7 @@ const socketIo = require("socket.io");
 const signature = require("cookie-signature");
 const cookie = require("cookie");
 const { createShardedAdapter } = require("@socket.io/redis-adapter");
-const Redis = require("ioredis");
+const redisClient = require("./configs/redis");
 
 // helper or util
 const date = require("./helpers/date");
@@ -71,11 +71,7 @@ const io = socketIo(httpServer, {
 });
 
 // Create Redis clients for pub and sub using ioredis
-const pubClient = new Redis({
-  port: REDIS_HOST_PORT, // Redis port
-  host: REDIS_HOST_ADDRESS, // Redis host
-  username: "default", // needs Redis >= 6
-});
+const pubClient = redisClient;
 const subClient = pubClient.duplicate();
 
 // Use the Redis adapter
