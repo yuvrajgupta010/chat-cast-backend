@@ -2,6 +2,8 @@ const redisClient = require("@/configs/redis.js");
 const { checkIsUserOnline } = require("@/helpers/redis.js");
 
 module.exports = function (io, socket) {
+  // console.log(`[PID ${process.pid}] New socket connected: ${socket.id}`); //  use for testing in Cluster mode
+
   socket.on("join-rooms-and-show-online", async (data) => {
     if (!data || !Array.isArray(data.rooms)) {
       return socket.emit("error", { message: "Invalid rooms data" });
@@ -105,6 +107,9 @@ module.exports = function (io, socket) {
     }
     const isReceiverOnline = await checkIsUserOnline(receiverId);
     if (!isReceiverOnline) return;
+    // console.log(
+    //   `[PID ${process.pid}] Received message: ${data.messageContent}`
+    // ); //  use for testing in Cluster mode
     socket.to(roomId).emit("new-message", data);
   });
 
