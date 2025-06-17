@@ -4,20 +4,17 @@ const {
   SERVER_ENV,
   COOKIE_DOMAIN,
 } = require("@/helpers/constant");
+const { authCookieConfig } = require("@/helpers/cookieConfig");
 
 exports.logout = (req, res, next) => {
   try {
     // clear access token cookie
     const token = req.signedCookies[`${COOKIE_ACCESS_TOKEN}`];
     if (token) {
-      res.clearCookie(COOKIE_ACCESS_TOKEN, {
-        httpOnly: true,
-        domain: SERVER_ENV !== "DEV" ? COOKIE_DOMAIN : "localhost",
-        secure: SERVER_ENV !== "DEV",
-        signed: true,
-        path: "/",
-        sameSite: "None",
-      });
+      res.clearCookie(
+        COOKIE_ACCESS_TOKEN,
+        authCookieConfig({ clearCookie: true })
+      );
     }
     return res.status(200).json({
       message: "Your are successfully logged out!",

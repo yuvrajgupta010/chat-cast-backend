@@ -10,6 +10,7 @@ const {
 } = require("@/helpers/constant");
 const { jwtSignToken } = require("@/helpers/jwt");
 const { addEmailInQueue } = require("@/helpers/bullMQ");
+const { authCookieConfig } = require("@/helpers/cookieConfig");
 
 const googleAuth = async (req, res, next) => {
   const profile = req.user;
@@ -33,7 +34,6 @@ const googleAuth = async (req, res, next) => {
       await newUser.save();
 
       const token = jwtSignToken({ email, userId: newUser._id.toString() });
-      const expires = new Date(Date.now() + ACCESS_TOKEN_EXPIRY_TIME); // Setting expiration to 1 day from now
 
       if (SERVER_ENV !== "DEV") {
         const year = new Date().getFullYear().toString();
@@ -53,31 +53,14 @@ const googleAuth = async (req, res, next) => {
         );
       }
 
-      res.cookie(COOKIE_ACCESS_TOKEN, token, {
-        path: "/",
-        domain: SERVER_ENV !== "DEV" ? COOKIE_DOMAIN : "localhost",
-        secure: SERVER_ENV !== "DEV",
-        expires,
-        httpOnly: true,
-        signed: true,
-        sameSite: "None",
-      });
+      res.cookie(COOKIE_ACCESS_TOKEN, token, authCookieConfig({}));
 
       return res.redirect(process.env.GOOGLE_AUTH_SUCCESS_URL);
     } else {
       if (user?.accountAuthType === ACCOUNT_CREATED_BY_GOOGLE) {
         const token = jwtSignToken({ email, userId: user.id });
-        const expires = new Date(Date.now() + ACCESS_TOKEN_EXPIRY_TIME); // Setting expiration to 1 day from now
 
-        res.cookie(COOKIE_ACCESS_TOKEN, token, {
-          path: "/",
-          domain: SERVER_ENV !== "DEV" ? COOKIE_DOMAIN : "localhost",
-          secure: SERVER_ENV !== "DEV",
-          expires,
-          httpOnly: true,
-          signed: true,
-          sameSite: "None",
-        });
+        res.cookie(COOKIE_ACCESS_TOKEN, token, authCookieConfig({}));
 
         return res.redirect(process.env.GOOGLE_AUTH_SUCCESS_URL);
       } else {

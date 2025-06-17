@@ -5,6 +5,7 @@ const {
   SERVER_ENV,
   COOKIE_DOMAIN,
 } = require("@/helpers/constant");
+const { authCookieConfig } = require("@/helpers/cookieConfig");
 
 exports.passportJWT = (req, res, next) => {
   passport.authenticate("jwt", { session: false }, (err, user, info) => {
@@ -23,14 +24,10 @@ exports.passportJWT = (req, res, next) => {
         message = "Unauthorized";
       }
 
-      res.clearCookie(COOKIE_ACCESS_TOKEN, {
-        httpOnly: true,
-        domain: SERVER_ENV !== "DEV" ? COOKIE_DOMAIN : "localhost",
-        secure: SERVER_ENV !== "DEV",
-        signed: true,
-        path: "/",
-        sameSite: "None",
-      });
+      res.clearCookie(
+        COOKIE_ACCESS_TOKEN,
+        authCookieConfig({ clearCookie: true })
+      );
 
       return res.status(401).json({ message });
     }
