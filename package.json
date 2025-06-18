@@ -4,7 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start:light": "pm2 start app.js --name chat-chat",
+    "start:lite": "pm2 start app.js --name chat-chat",
     "start": "pm2 start app.js -i max --name chat-chat",
     "dev": "nodemon app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
