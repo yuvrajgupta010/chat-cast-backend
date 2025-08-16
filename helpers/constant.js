@@ -41,12 +41,11 @@ module.exports = {
   COOKIE_ACCESS_TOKEN: "accessToken",
   ACCESS_TOKEN_EXPIRY_TIME: 24 * 60 * 60 * 1000, // 1 day in milliseconds
   COOKIE_FORGET_TOKEN: "forgetToken",
-  FORGET_TOKEN_EXPIRY_TIME: 5 * 60 * 1000, // 1 day in milliseconds
+  FORGET_TOKEN_EXPIRY_TIME: 5 * 60 * 1000, // 5 min in milliseconds
   COOKIE_SECRET: process.env.COOKIE_SECRET,
   COOKIE_DOMAIN: process.env.COOKIE_DOMAIN,
   // AWS S3
   STATIC_FILE_S3_ADDRESS: process.env.STATIC_FILE_S3_ADDRESS,
   // JWT auth
   JWT_SECRET_KEY: process.env.JWT_SECRET_KEY,
-  JWT_FORGET_TOKEN_KEY: process.env.JWT_FORGET_TOKEN_KEY,
 };

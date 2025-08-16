@@ -159,12 +159,6 @@ router.put(
       .toLowerCase()
       .isIn(["verify", "resend"])
       .withMessage('Type must be either "verify" or "resend" in query param'),
-    body("email") // this email in body come from above forgetTokenVerification middleware
-      .trim()
-      .notEmpty()
-      .isEmail()
-      .normalizeEmail()
-      .withMessage("Please enter a valid email."),
     body("otp")
       .if((value, { req }) => req.query.type === "verify")
       .notEmpty()

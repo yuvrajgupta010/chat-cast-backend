@@ -48,7 +48,6 @@ MAIN_APP_DOMAIN="" # Your frontend address like - chat-cast.frontend.com
 
 # JWT
 JWT_SECRET_KEY=""
-JWT_FORGET_TOKEN_KEY=""
 
 # Cookie
 COOKIE_SECRET=""
@@ -60,6 +59,10 @@ SESSION_SECRET=""
 # Sendgrid
 SENDGRID_SECRET_KEY=""
 SENDGRID_VERIFIED_EMAIL=""
+
+# Zoho
+ZOHO_EMAIL_APP_PASSWORD=""
+ZOHO_EMAIL=""
 
 # Bcrypt
 BCRYPT_SECRET_KEY=""

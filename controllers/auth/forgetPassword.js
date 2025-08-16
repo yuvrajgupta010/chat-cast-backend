@@ -65,7 +65,7 @@ exports.forgetPassword = async (req, res, next) => {
 
     const generatedForgetToken = jwtForgetToken({
       email,
-      tokenType: "forget-token",
+      tokenType: COOKIE_FORGET_TOKEN,
     });
 
     const expires = new Date(Date.now() + FORGET_TOKEN_EXPIRY_TIME); // setting 5 min from now

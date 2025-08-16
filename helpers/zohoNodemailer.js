@@ -1,7 +1,16 @@
-const sgMail = require("@sendgrid/mail");
-sgMail.setApiKey(process.env.SENDGRID_SECRET_KEY);
+const nodeMailer = require("nodemailer");
+const ZOHO_EMAIL = process.env.ZOHO_EMAIL;
+const ZOHO_EMAIL_APP_PASSWORD = process.env.ZOHO_EMAIL_APP_PASSWORD;
 
-const SENDGRID_VERIFIED_EMAIL = process.env.SENDGRID_VERIFIED_EMAIL;
+let transporter = nodeMailer.createTransport({
+  host: "smtp.zoho.in",
+  secure: true,
+  port: 465,
+  auth: {
+    user: ZOHO_EMAIL,
+    pass: ZOHO_EMAIL_APP_PASSWORD,
+  },
+});
 
 /**
  * Sends an email using SendGrid.
@@ -14,14 +23,14 @@ const SENDGRID_VERIFIED_EMAIL = process.env.SENDGRID_VERIFIED_EMAIL;
 const sendEmail = async (to, subject, text, html) => {
   const msg = {
     to,
-    from: SENDGRID_VERIFIED_EMAIL,
+    from: ZOHO_EMAIL,
     subject,
     text,
     html,
   };
 
   try {
-    await sgMail.send(msg);
+    await transporter.sendMail(msg);
     // console.log("Email sent successfully");
   } catch (error) {
     // console.error("Error sending email:", error);

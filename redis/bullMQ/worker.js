@@ -14,7 +14,7 @@ const {
   REDIS_HOST_ADDRESS,
   REDIS_HOST_PORT,
 } = require("@/helpers/constant");
-const { sendEmail } = require("@/helpers/sendgrid");
+const { sendEmail } = require("@/helpers/zohoNodemailer");
 
 // Environment variables
 const STATIC_FILE_S3_ADDRESS = process.env.STATIC_FILE_S3_ADDRESS;
@@ -130,7 +130,7 @@ const emailServiceWorker = new Worker(
         generatedHTML
       );
     } catch (error) {
-      console.log(error, "error in Bull MQ worker");
+      console.error(JSON.stringify(error), "error in Bull MQ worker");
     }
   },
   {

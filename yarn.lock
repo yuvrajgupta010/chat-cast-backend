@@ -631,7 +631,7 @@
 
 "@msgpackr-extract/msgpackr-extract-linux-x64@3.0.3":
   version "3.0.3"
-  resolved "https://registry.yarnpkg.com/@msgpackr-extract/msgpackr-extract-linux-x64/-/msgpackr-extract-linux-x64-3.0.3.tgz#4a0609ab5fe44d07c9c60a11e4484d3c38bbd6e3"
+  resolved "https://registry.npmjs.org/@msgpackr-extract/msgpackr-extract-linux-x64/-/msgpackr-extract-linux-x64-3.0.3.tgz"
   integrity sha512-cvwNfbP07pKUfq1uH+S6KJ7dT9K8WOE4ZiAcsrSes+UY55E/0jLYc+vq+DO7jlmqRb5zAggExKm0H7O/CBaesg==
 
 "@msgpackr-extract/msgpackr-extract-win32-x64@3.0.3":
@@ -1398,7 +1398,7 @@ buffer-equal-constant-time@1.0.1:
 
 bufferutil@^4.0.8:
   version "4.0.9"
-  resolved "https://registry.yarnpkg.com/bufferutil/-/bufferutil-4.0.9.tgz#6e81739ad48a95cad45a279588e13e95e24a800a"
+  resolved "https://registry.npmjs.org/bufferutil/-/bufferutil-4.0.9.tgz"
   integrity sha512-WDtdLmJvAuNNPzByAYpRo2rF1Mmradw6gvWsQKf63476DDXmomT9zUiGypLcG4ibIM67vhAj8jJRdbmEws2Aqw==
   dependencies:
     node-gyp-build "^4.3.0"
@@ -1596,7 +1596,14 @@ debug@2.6.9:
   dependencies:
     ms "2.0.0"
 
-debug@4, debug@4.x, debug@^4, debug@^4.3.4, debug@~4.3.1, debug@~4.3.2, debug@~4.3.4:
+debug@4, debug@4.x, debug@^4, debug@^4.3.4:
+  version "4.4.1"
+  resolved "https://registry.yarnpkg.com/debug/-/debug-4.4.1.tgz#e5a8bc6cbc4c6cd3e64308b0693a3d4fa550189b"
+  integrity sha512-KcKCqiftBJcZr++7ykoDIEwSa3XWowTfNPo92BYxjXiyYEVrUQh2aLyhxBCwww+heortUFxEJYcRzosstTEBYQ==
+  dependencies:
+    ms "^2.1.3"
+
+debug@~4.3.1, debug@~4.3.2, debug@~4.3.4:
   version "4.3.7"
   resolved "https://registry.npmjs.org/debug/-/debug-4.3.7.tgz"
   integrity sha512-Er2nc/H7RrMXZBFCEim6TCmMk02Z8vLC2Rbi1KEBggpo0fS6l0S1nnapwmIi3yW/+GOJap1Krg4w0Hg80oCqgQ==
@@ -1675,15 +1682,10 @@ destroy@1.2.0:
   resolved "https://registry.npmjs.org/destroy/-/destroy-1.2.0.tgz"
   integrity sha512-2sJGJTaXIIaR1w4iJSNoN0hnMY7Gpc/n8D4qSCJw8QqFWXf7cuAgnEHxBpweaVcPevC2l3KpjYCx3NypQQgaJg==
 
-detect-libc@^2.0.0:
+detect-libc@^2.0.0, detect-libc@^2.0.1:
   version "2.0.3"
   resolved "https://registry.npmjs.org/detect-libc/-/detect-libc-2.0.3.tgz"
   integrity sha512-bwy0MGW55bG41VqxxypOsdSdGqLwXPI/focwgTYCFMbdUiBAxLg9CFzG08sz2aqzknwiX7Hkl0bQENjg8iLByw==
-
-detect-libc@^2.0.1:
-  version "2.0.4"
-  resolved "https://registry.yarnpkg.com/detect-libc/-/detect-libc-2.0.4.tgz#f04715b8ba815e53b4d8109655b6508a6865a7e8"
-  integrity sha512-3UDv+G9CsCKO1WKMGw9fwq/SWJYbI0c5Y7LU1AXYoDdbhE2AHQ6N6Nb34sG8Fj7T5APy8qXDCKuuIHd1BR0tVA==
 
 dfa@^1.2.0:
   version "1.2.0"
@@ -2571,7 +2573,7 @@ ms@2.1.3, ms@^2.1.1, ms@^2.1.3:
 
 msgpackr-extract@^3.0.2:
   version "3.0.3"
-  resolved "https://registry.yarnpkg.com/msgpackr-extract/-/msgpackr-extract-3.0.3.tgz#e9d87023de39ce714872f9e9504e3c1996d61012"
+  resolved "https://registry.npmjs.org/msgpackr-extract/-/msgpackr-extract-3.0.3.tgz"
   integrity sha512-P0efT1C9jIdVRefqjzOQ9Xml57zpOXnIuS+csaB4MdZbTdmGDLo8XhzBG1N7aO11gKDDkJvBLULeFTo46wwreA==
   dependencies:
     node-gyp-build-optional-packages "5.2.2"
@@ -2614,20 +2616,20 @@ node-fetch@^2.6.7:
 
 node-gyp-build-optional-packages@5.2.2:
   version "5.2.2"
-  resolved "https://registry.yarnpkg.com/node-gyp-build-optional-packages/-/node-gyp-build-optional-packages-5.2.2.tgz#522f50c2d53134d7f3a76cd7255de4ab6c96a3a4"
+  resolved "https://registry.npmjs.org/node-gyp-build-optional-packages/-/node-gyp-build-optional-packages-5.2.2.tgz"
   integrity sha512-s+w+rBWnpTMwSFbaE0UXsRlg7hU4FjekKU4eyAih5T8nJuNZT1nNsskXpxmeqSK9UzkBl6UgRlnKc8hz8IEqOw==
   dependencies:
     detect-libc "^2.0.1"
 
 node-gyp-build@^4.3.0:
   version "4.8.4"
-  resolved "https://registry.yarnpkg.com/node-gyp-build/-/node-gyp-build-4.8.4.tgz#8a70ee85464ae52327772a90d66c6077a900cfc8"
+  resolved "https://registry.npmjs.org/node-gyp-build/-/node-gyp-build-4.8.4.tgz"
   integrity sha512-LA4ZjwlnUblHVgq0oBF3Jl/6h/Nvs5fzBLwdEF4nuxnFdsfajde4WfxtJr3CaiH+F6ewcIB/q4jQ4UzPyid+CQ==
 
-nodemailer@^6.9.13:
-  version "6.10.0"
-  resolved "https://registry.npmjs.org/nodemailer/-/nodemailer-6.10.0.tgz"
-  integrity sha512-SQ3wZCExjeSatLE/HBaXS5vqUOQk6GtBdIIKxiFdmm01mOQZX/POJkO3SUX1wDiYcwUOJwT23scFSC9fY2H8IA==
+nodemailer@^7.0.5:
+  version "7.0.5"
+  resolved "https://registry.yarnpkg.com/nodemailer/-/nodemailer-7.0.5.tgz#3fa6607cab42401e4bedac9297e0aaa9ff84544b"
+  integrity sha512-nsrh2lO3j4GkLLXoeEksAMgAOqxOv6QumNRVQTJwKH4nuiww6iC2y7GyANs9kRAxCexg3+lTWM3PZ91iLlVjfg==
 
 nodemon@^3.1.0:
   version "3.1.9"
@@ -3276,7 +3278,7 @@ unpipe@1.0.0, unpipe@~1.0.0:
 
 utf-8-validate@^6.0.4:
   version "6.0.5"
-  resolved "https://registry.yarnpkg.com/utf-8-validate/-/utf-8-validate-6.0.5.tgz#8087d39902be2cc15bdb21a426697ff256d65aab"
+  resolved "https://registry.npmjs.org/utf-8-validate/-/utf-8-validate-6.0.5.tgz"
   integrity sha512-EYZR+OpIXp9Y1eG1iueg8KRsY8TuT8VNgnanZ0uA3STqhHQTLwbl+WX76/9X5OY12yQubymBpaBSmMPkSTQcKA==
   dependencies:
     node-gyp-build "^4.3.0"

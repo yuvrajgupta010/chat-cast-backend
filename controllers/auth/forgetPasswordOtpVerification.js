@@ -25,7 +25,8 @@ exports.forgetPasswordOtpVerification = async (req, res, next) => {
     const { type: requestTypeQuery } = req.query;
 
     if (requestTypeQuery === "verify") {
-      const { email, newPassword, otp } = req.body;
+      const { newPassword, otp } = req.body;
+      const { email } = req.jwtPayload;
 
       const date5MinutesAgo = date5MinutesAgoFn();
       const otpData = await Otp.findOne({
@@ -72,6 +73,10 @@ exports.forgetPasswordOtpVerification = async (req, res, next) => {
 
       const token = jwtSignToken({ email, userId: user._id.toString() });
 
+      res.clearCookie(
+        COOKIE_FORGET_TOKEN,
+        authCookieConfig({ clearCookie: true })
+      );
       res.cookie(COOKIE_ACCESS_TOKEN, token, authCookieConfig({}));
 
       return res.status(200).json({
@@ -79,8 +84,8 @@ exports.forgetPasswordOtpVerification = async (req, res, next) => {
         message: "Account recovered successfully and your new password is set",
       });
     } else if (requestTypeQuery === "resend") {
-      const { email } = req.body;
-
+      const { email } = req.jwtPayload;
+      // console.log(req.jwtPayload);
       const date5MinutesAgo = date5MinutesAgoFn();
 
       const otpsData = await Otp.find({
@@ -124,7 +129,7 @@ exports.forgetPasswordOtpVerification = async (req, res, next) => {
 
       const generatedForgetToken = jwtForgetToken({
         email,
-        tokenType: "forget-token",
+        tokenType: COOKIE_FORGET_TOKEN,
       });
 
       res.cookie(

@@ -10,7 +10,7 @@ const errorMiddleware = require("@/middlewares/error");
 // Passport
 // require("@/configs/passport/socialAuth");
 require("@/configs/passport/jwt");
-require("@/configs/sendgrid");
+
 // Redis
 require("@/redis/bullMQ/worker");
 require("@/configs/redis.js");

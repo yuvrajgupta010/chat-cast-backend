@@ -1,7 +1,4 @@
-const {
-  COOKIE_FORGET_TOKEN,
-  JWT_FORGET_TOKEN_KEY,
-} = require("@/helpers/constant");
+const { COOKIE_FORGET_TOKEN, JWT_SECRET_KEY } = require("@/helpers/constant");
 const { authCookieConfig } = require("@/helpers/cookieConfig");
 const { jwtForgetTokenVerify } = require("@/helpers/jwt");
 
@@ -16,7 +13,7 @@ exports.forgetTokenVerification = async (req, res, next) => {
 
   let decodedPayload;
   try {
-    decodedPayload = jwtForgetTokenVerify(forgetToken, JWT_FORGET_TOKEN_KEY);
+    decodedPayload = jwtForgetTokenVerify(forgetToken, JWT_SECRET_KEY);
   } catch (err) {
     const error = new Error(
       "Unauthorized access! Your token is invalid or expired."
@@ -40,7 +37,7 @@ exports.forgetTokenVerification = async (req, res, next) => {
     next(error);
     return;
   } else if (
-    decodedPayload?.tokenType !== "forget-token" &&
+    decodedPayload?.tokenType !== COOKIE_FORGET_TOKEN &&
     !(decodedPayload?.email?.length > 0)
   ) {
     const error = new Error("Token not contain required information");
@@ -48,6 +45,7 @@ exports.forgetTokenVerification = async (req, res, next) => {
     next(error);
     return;
   }
-  req.body.email = decodedPayload?.email;
+  // console.log(decodedPayload);
+  req.jwtPayload = decodedPayload;
   next();
 };

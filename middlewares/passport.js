@@ -12,9 +12,9 @@ exports.passportJWT = (req, res, next) => {
       let message = null;
 
       if (info && info.name === "TokenExpiredError") {
-        message = "Your token has expired. Please log in again.";
+        message = "Your session is expired";
       } else if (info && info.name === "JsonWebTokenError") {
-        message = "Invalid token. Please log in again.";
+        message = "Invalid token.";
       } else {
         message = "Unauthorized";
       }
