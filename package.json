@@ -4,8 +4,8 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start:lite": "pm2 start app.js --name chat-chat",
-    "start": "pm2 start app.js -i max --name chat-chat",
+    "start:lite": "pm2 start app.js --name chat-cast",
+    "start": "pm2 start app.js -i max --name chat-cast",
     "dev": "nodemon app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
